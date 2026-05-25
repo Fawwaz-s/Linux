@@ -1,0 +1,27 @@
+***Hashing at the basic form, not very safe
+echo -n "hello" | md5sum #-n flag tells Linux not to add a hidden newline character at the end of the word. If you forget -n,
+                           you will be hashing "hello\n", which gives you a completely different scramble!
+echo -n "hello" | sha256sum 
+sha256sum t.txt #this is for hashing a file
+-----------
+Modern $ Real-world use cases
+echo -n "hello" | openssl dgst -md5 #dgst - digest
+echo -n "hello" | openssl dgst -sha256 #stronger
+echo -n "hello" | openssl dgst -sha512 # strongest and modern
+openssl dgst -sha256 game_patch.iso #to hash file
+-----------
+openssl enc -aes-256-cbc -salt -pbkdf2 -in secrets.txt -out secrets.enc 
+enc -aes-256-cbc: Tells OpenSSL to use the Advanced Encryption Standard (AES) with a 256-bit key in Cipher Block Chaining (CBC) mode. 
+This is practically uncrackable by today's standards.
+-salt: (Crucial) Tells OpenSSL to generate a random 8-byte salt and mix it in. This protects your file against dictionary attacks.
+-pbkdf2: Stands for Password-Based Key Derivation Function 2. It enforces a modern, super-secure method of turning your typed
+password into an encryption key by repeating the hashing process thousands of times. Always use this flag.
+-in secrets.txt: The original, readable file you want to encrypt.
+-out secrets.enc: The new, locked, scrambled file that will be created. out files doesn't always have to have a .enc file extension, it can be anything
+------------
+openssl enc -aes-256-cbc -d -pbkdf2 -in secrets.enc -out recovered_secrets.txt
+-d: Tells OpenSSL to decrypt instead of encrypt.
+-in secrets.enc: You feed it the scrambled file.
+-out recovered_secrets.txt: The name of the clean, readable file you want to output.
+----------
+head -c 16 secrets.enc | xxd #too peek to see if a file is salted or not.
