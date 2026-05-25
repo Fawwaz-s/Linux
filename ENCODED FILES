@@ -46,7 +46,7 @@ File Extension                                       Command to Decode / Extract
 file.gz   (Gzip-compressed file)                       gunzip file.gz                      gzip file.txt
 file.bz2  (Bzip2 compressed file)                      bunzip2 file.bz2                    bzip2 file.txt #add -k flag to keep original file cos it deletes
 file.tar  (Uncompressed Tar archive)                   tar -xvf archive.tar                tar -cvf file.tar file.txt
-file.tar.gz or .tgz (Tar archive compressed with Gzip)     tar -xzvf archive.tar.gz        tar -czvf archive.tar.gz /path/to/folder
+file.tar.gz or .tgz (Tar archive compressed with Gzip)     tar -xzvf archive.tar.gz        tar -czvf archive.tar.gz /path/to/folder #-c flag -create
 .tar.bz2 or .tbz2 (Tar archive compressed with Bzip2)  tar -xjvf archive.tar.bz2           tar -cjvf archive.tar.bz2 /path/to/folder
 
 Key Behavior: 
