@@ -24,4 +24,13 @@ openssl enc -aes-256-cbc -d -pbkdf2 -in secrets.enc -out recovered_secrets.txt
 -in secrets.enc: You feed it the scrambled file.
 -out recovered_secrets.txt: The name of the clean, readable file you want to output.
 ----------
-head -c 16 secrets.enc | xxd #too peek to see if a file is salted or not.
+head -c 16 secrets.enc | xxd #too peek to see if a file is salted or not. # -c count
+----------
+to test certificate authenticity
+openssl x509 -in cert.pem -text -noout
+- openssl: Calls the main OpenSSL cryptographic toolkit.
+- x509: Tells OpenSSL that you are working with the X.509 standard.
+    X.509 is the universal format standard used for digital certificates (like the HTTPS certificates that secure websites).
+-in cert.pem: Specifies the input file you want to look at. In this case, the certificate file is named cert.pem.
+-text: This is the magic flag. It tells OpenSSL to translate the scrambled cryptographic data into a highly detailed, human-readable text format.
+-noout: Stands for "No Output". By default, OpenSSL will dump the original, messy scrambled certificate text at the bottom of your screen after decoding it. Adding -noout tells it: "Only show me the decoded text, don't spit the raw encoded certificate back at me."
