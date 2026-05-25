@@ -1,0 +1,69 @@
+###Base 64 
+they usually end with = or ==
+**to encode
+base64 my.txt > your.txt # your.txt is the ouput file coded
+echo "Elodie" | base64  #this will encode elodie
+
+**decode
+base64 -d your.png > they.png #they is the output decoded file
+echo "ZWxvZGllCg==" | base64 -d #decode
+echo "ZWxvZGllCg==" | base64 --decode # --decode works also 
+
+###Hexadecimal decode
+**encode
+xxd my.txt > your.txt
+echo "Elodie" | xxd
+
+**decode
+echo "00000000: 4f48 6844 616d 3574 5a32 394c 596b 644d  OHhDam5tZ29LYkdM
+00000010: 6145 6847 5156 7073 5230 5531 5647 3131  aEhGQVpsR0U1VG11
+00000020: 4e45 3079 6445 744b 5557 384b 0a         NE0ydEtKUW8K." | xxd -r -p #this is what hexa decode looks like. -p ---flag for plaintext
+xxd -r -p your.txt > they.txt 
+xxd --revert -p your.txt > they.txt
+
+###CESEAR'S CIPHER
+echo "Hello World" | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+Uryyb Jbeyq
+echo "Uryyb Jbeyq" | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+Hello World
+tr 'A-Za-z' 'N-ZA-Mn-za-m' < yo.txt #works with files indirectly
+cat yo.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+
+###BINARY 
+cat file.txt | tr -d ' ' | fold -w 8 | while read B; do printf "\\$(printf '%03o' $((2#$B)))"; done
+cat reads the file
+tr -d ' 'removes spacesfold
+-w 8splits into 8-bit chunks
+while read Bloops line by line
+2#$Bconverts binary → decimal
+printf '%03o'converts decimal → octal
+printf "\\$(…)"converts octal → ASCII character
+
+echo "01001000 01100101 01101100 01101100 01101111" | perl -lape '$_=pack"B*",$_=~s/\s+//gr'
+another binary translator
+###FOT BZIP, GZIP AND TAR DECODE
+File Extension                                       Command to Decode / Extract         Command to Encode /Compress
+file.gz   (Gzip-compressed file)                       gunzip file.gz                      gzip file.txt
+file.bz2  (Bzip2 compressed file)                      bunzip2 file.bz2                    bzip2 file.txt #add -k flag to keep original file cos it deletes
+file.tar  (Uncompressed Tar archive)                   tar -xvf archive.tar                tar -cvf file.tar file.txt
+file.tar.gz or .tgz (Tar archive compressed with Gzip)     tar -xzvf archive.tar.gz        tar -czvf archive.tar.gz /path/to/folder
+.tar.bz2 or .tbz2 (Tar archive compressed with Bzip2)  tar -xjvf archive.tar.bz2           tar -cjvf archive.tar.bz2 /path/to/folder
+
+Key Behavior: 
+- Gzip only compresses single files. If you try to gzip a folder, it won't work. When you run gunzip file.gz, 
+  it restores the original file and deletes the .gz version.
+- Bzip2 uses a different mathematical algorithm than Gzip. It usually achieves better compression (smaller file sizes), 
+  but it takes more time and CPU power to encode and decode. Like Gzip, it only works on single files.
+- tar does not compress files to make them smaller. Instead, it takes a whole folder hierarchy and "stitches" them together into one single file
+  (often called a "tarball").
+- The Flag Breakdown: To decode a basic .tar file, you use tar -xvf:
+     -x: Extract the files (decode them).
+     -v: Verbose (show a list of files on screen as they extract).
+     -f: File (tells tar that the very next argument is the filename).
+*****COMBINED
+Because gunzip and bunzip2 can't compress folders, and tar can't make files smaller, Linux users combine them.
+First, tar groups a folder into archive.tar. Then, gzip shrinks it into archive.tar.gz.
+When you want to decode these combined files, the tar command is smart enough to handle the decompression and the extraction all
+in one step using special "shortcut" flags:
+ For .tar.gz (uses the -z flag for gzip): tar -xzvf archive.tar.gz #this -z flag is to compress by tar and encode by gunzip 
+ For .tar.bz2 (uses the -j flag for bzip2): tar -xjvf archive.tar.bz2  #this -j flag is to compress by tar and encode by gunzip 
