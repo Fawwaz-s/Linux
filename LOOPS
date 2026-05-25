@@ -1,0 +1,82 @@
+
+
+## 1. Basic Loop (Count numbers)
+for i in 1 2 3 4 5
+do
+  echo "Number: $i"
+done
+```
+**Output:**
+Number: 1
+Number: 2.... etc
+
+## 2. Loop with a Range
+for i in {1..10}
+do
+    if [ $((i % 2)) -eq 0 ]; then # if logic to print even numbers 
+        echo "Numero: $i"
+    fi #way to end if clause
+done
+```
+- `{1..10}` means **from 1 to 10** automatically
+
+
+
+## 3. Loop with Step (Count by 2s)
+
+for i in {0..20..2}
+do
+  echo "$i"
+done
+
+- `{0..20..2}` = start at 0, end at 20, **jump by 2**  ---{start..end..step}- this will print even numbers too
+ 
+- Output: 0, 2, 4, 6 ... 20
+
+---
+
+## 4. Loop through Words
+
+for name in Alice Bob Charlie
+do
+  echo "Hello $name"
+done
+
+**Output:**
+```
+Hello Alice
+Hello Bob
+Hello Charlie
+```
+
+
+## 5. Loop through Files
+for file in /home/*.txt #*.txt searches for all matching txt files current direc.. #**/*.txt searches everywhere even subfiles for txt ## .* shows hidden files ## 
+do
+  echo "Found file: $file"
+done
+```
+- Loops through **every .txt file** in /home
+
+---
+
+
+## 7. Loop with `seq` (for brute force)
+
+for i in $(seq -w 0 9999) #tries every possible 4 digit sequence
+do
+  echo "Code: $i"
+done
+```
+- `seq -w` = sequence with **leading zeros** (0001, 0002...) 
+
+## Key Rules to Remember
+
+| Start with `for` | `for i in ...` |
+| Open with `do` | `do` |
+| Your command goes here | `echo "$i"` |
+| Close with `done` | `done` |
+| Variable uses `$` | `$i` not `i` |
+
+(for i in $(seq -w 0 9999); do echo "gb8KRRCsshuZXI0tUuR6ypOFjiZbf3G8 $i"; done) | nc localhost 30002
+#start                          # command - prints a pass + plus sequence  to a port
