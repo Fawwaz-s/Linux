@@ -1,0 +1,42 @@
+Tool                     Purpose
+curl               Transfer data to/from servers
+nc (netcat)         Raw TCP/UDP connections
+openssl s_client    Test SSL/TLS encrypted connections
+nmap                Scan networks and ports
+telnet              Connect to remote hosts (unencrypted)
+ports               Doors that services listen on 
+
+###PORTS
+Well Known Ports:
+Port      Service          Protocol  
+21         FTP          File transfer
+22         SSH          Secure remote login
+23        Telnet        Unsecure remote login
+25         SMTP          Sending email
+53         DNS           Domain name lookup
+80        HTTP           Web traffic
+443       HTTPS         Secure web traffic
+3306      MySQL          Database
+8080      HTTP         altDev web servers
+
+PORT RANGES
+0    - 1023   → System/well-known ports (need root)
+1024 - 49151  → Registered ports (applications)
+49152 - 65535 → Dynamic/private ports (temporary)
+
+###Curl 
+Transfer Data From Servers -it fetches web content from the terminal.
+curl [flags] [URL]
+Common flags:
+Flag      Meaning                                  Example
+-v       verbose, show full connection details   curl -v google.com
+-I       fetch headers only                       curl -I google.com
+-L        follow redirects                        curl -L google.com #usually used when url has been changed and redirects, instead of break, it goes. 
+-o      save output to file                       curl -o page.html google.com
+-O      save with original filename               curl -O example.com/file.zip
+-u      username:password auth                    curl -u user:pass example.com
+-X      specify HTTP method                       curl -X POST example.com
+-d      send data (POST body)                     curl -d "name=John" example.com
+-H      add custom header                         curl -H "Authorization: Bearer token"
+-k      ignore SSL certificate errors             curl -k https://example.com
+-s      silent mode, no progress bar              curl -s example.com
