@@ -49,7 +49,7 @@ curl -Lv https://google.com #Follow redirects verbosely
 curl -u admin:password123 http://example.com/api #Pass authentication
 
 ###nc (Netcat) — Netcat creates raw TCP/UDP connections
-nc [flags] [host] [port]
+basic context: nc [flags] [host] [port]
 Common Flags:
 Flag           Meaning
 -l          listen mode (be the server)
@@ -74,5 +74,35 @@ nc machine1_ip 1234    # machine 2 connects
 # Banner grabbing (see what service is running)
 nc -v example.com 80
 
+###openssl s_client — Test SSL/TLS Connections
+Like netcat but for encrypted HTTPS connections — lets you peek inside SSL certificates and encrypted channels.
+Basic Syntax:
+openssl s_client -connect host:port
+Common Flags:
+Flag              Meaning
+-connect    target host:port
+-showcerts  show full certificate chain
+-tls1_2      force TLS 1.2
+-tls1_3      force TLS 1.3
+-CAfile      verify against specific CA file
+-starttls    upgrade plain connection to SSL (email)
+-quiet       less verbose output
+
+openssl s_client -connect google.com:443  # Basic SSL connection test
+openssl s_client -connect google.com:443 -showcerts # See full certificate chain
+openssl s_client -connect mail.example.com:587 -starttls smtp  # Test email server SSL (SMTP)
+# Check certificate expiry date
+openssl s_client -connect example.com:443 | openssl x509 -noout -dates
+# Force specific TLS version
+openssl s_client -connect example.com:443 -tls1_2
+# Connect to Bandit style challenge
+openssl s_client -connect localhost:30001
+
+What the output tells you:
+Certificate chain        → who issued the SSL cert
+Server certificate       → the cert details
+SSL handshake            → encryption negotiated
+Verify return code: 0    → ✅ certificate valid
+Verify return code: 18   → ❌ certificate expired
 
 
