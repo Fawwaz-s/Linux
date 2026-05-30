@@ -48,4 +48,31 @@ curl -X POST -d "username=admin&password=1234" http://example.com/login #Send a 
 curl -Lv https://google.com #Follow redirects verbosely
 curl -u admin:password123 http://example.com/api #Pass authentication
 
+###nc (Netcat) — Netcat creates raw TCP/UDP connections
+nc [flags] [host] [port]
+Common Flags:
+Flag           Meaning
+-l          listen mode (be the server)
+-v          verbose output-pspecify port
+-u          use UDP instead of TCP
+-z          zero I/O — scan only, don't send data
+-w          timeout in seconds
+-n          no DNS lookup
+
+nc localhost 30002 # Connect to a server on port 30002 (like Bandit)
+nc -l -p 1234 # Listen on a port (you become the server)
+nc -zv google.com 80 # Port scan a host
+# Send a file
+nc -l -p 1234 > received_file.txt      # receiver
+nc hostname 1234 < file_to_send.txt    # sender
+
+# Simple chat between two machines
+nc -l -p 1234          # machine 1 listens
+nc machine1_ip 1234    # machine 2 connects
+# now both can type messages to each other
+
+# Banner grabbing (see what service is running)
+nc -v example.com 80
+
+
 
