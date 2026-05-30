@@ -10,6 +10,17 @@ echo -n "hello" | openssl dgst -sha256 #stronger
 echo -n "hello" | openssl dgst -sha512 # strongest and modern
 openssl dgst -sha256 game_patch.iso #to hash file
 -----------
+Hashing with Salt
+(echo -n "MySecretSalt123"; cat report.pdf) | sha256sum
+The parentheses ( ... ) bundle the commands together.
+echo -n streams the salt string first without a newline.
+cat report.pdf streams the entire contents of the file immediately right after the salt.
+###there is another method
+echo -n "MySecretSalt123" > salted_file.tmp #Write the salt to a new file
+cat report.pdf >> salted_file.tmp #Append the original file's contents to it
+sha256sum salted_file.tmp #Hash the combined file
+rm salted_file.tmp #Clean up your tracks
+-------------------------------------------------------
 openssl enc -aes-256-cbc -salt -pbkdf2 -in secrets.txt -out secrets.enc 
 enc -aes-256-cbc: Tells OpenSSL to use the Advanced Encryption Standard (AES) with a 256-bit key in Cipher Block Chaining (CBC) mode. 
 This is practically uncrackable by today's standards.
