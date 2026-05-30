@@ -40,3 +40,12 @@ Flag      Meaning                                  Example
 -H      add custom header                         curl -H "Authorization: Bearer token"
 -k      ignore SSL certificate errors             curl -k https://example.com
 -s      silent mode, no progress bar              curl -s example.com
+---------------
+curl example.com # Simple fetch a webpage
+curl -O https://example.com/file.zip #Download a file
+curl -I https://google.com #See server headers only
+curl -X POST -d "username=admin&password=1234" http://example.com/login #Send a POST request with data
+curl -Lv https://google.com #Follow redirects verbosely
+curl -u admin:password123 http://example.com/api #Pass authentication
+
+
