@@ -105,4 +105,85 @@ SSL handshake            → encryption negotiated
 Verify return code: 0    → ✅ certificate valid
 Verify return code: 18   → ❌ certificate expired
 
+### nmap — Network Scanner
+Nmap is a network reconnaissance tool — it maps what's alive, what ports are open, and what services are running.
+Basic Syntax: nmap [flags] [target]
+Common Flags:
+Flag                    Meaning
+-sV           detect service versions
+-sC           run default scripts
+-sS           stealth SYN scan
+-sU           UDP scan
+-p            specify ports
+-p-           scan all 65535 ports
+-O            detect operating system
+-A            aggressive scan (OS + version + scripts)
+-T4           faster scan speed 
+-v            verbose output
+--open        show only open ports 
+-oN           save output to file
+-iL           read targets from file
+
+Usecase examples
+
+# Basic scan of a host
+nmap 192.168.1.1
+
+# Scan specific port
+nmap -p 80 192.168.1.1
+
+# Scan range of ports
+nmap -p 1-1000 192.168.1.1
+
+# Scan ALL ports
+nmap -p- 192.168.1.1
+
+# Detect service versions
+nmap -sV 192.168.1.1
+
+# Full aggressive scan
+nmap -A 192.168.1.1
+
+# Scan entire network
+nmap 192.168.1.0/24
+
+# Save results to file
+nmap -oN results.txt 192.168.1.1
+
+# Fast scan with version detection
+nmap -T4 -sV --open 192.168.1.1
+
+OUTPUT EXPLAINED
+PORT     STATE   SERVICE   VERSION
+22/tcp   open    ssh       OpenSSH 8.2
+80/tcp   open    http      Apache 2.4.41
+443/tcp  open    https     nginx 1.18
+3306/tcp closed  mysql
+----------------------------------
+SUMMARY
+-----------------------------------
+CURL          → speaks HTTP/HTTPS properly, best for web APIs
+NETCAT        → raw TCP/UDP, no protocol, most flexible
+OPENSSL       → like netcat but handles encryption
+NMAP          → doesn't connect to talk, just knocks on doors
+TELNET        → old curl/netcat, no encryption
+------------------
+REWORLD USAGE
+
+# Step 1: discover what's running on a server
+nmap -sV -p- target.com
+
+# Step 2: check if port 80 is responding
+nc -zv target.com 80
+
+# Step 3: grab the webpage
+curl -v http://target.com
+
+# Step 4: check SSL certificate
+openssl s_client -connect target.com:443
+
+
+
+
+
 
