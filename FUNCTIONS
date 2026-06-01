@@ -1,0 +1,12 @@
+greet() {
+  local NAME="$1" #local means it works only in this function
+  echo "Hello, $NAME"
+}
+#greet fawaz => Hello fawaz 
+............
+ add() {
+  local RESULT=$(( $1 + $2 ))
+  echo "$RESULT"
+}
+#add 5  6 => 11
+...........
