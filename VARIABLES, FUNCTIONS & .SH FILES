@@ -1,0 +1,28 @@
+###Special / built-in variables
+$0   # name of the script itself
+$1 $2 $3  # positional args passed to script or function
+$@   # all arguments as separate words
+$*   # all arguments as one string
+$#   # number of arguments
+$?   # exit code of last command (0 = success)
+$$   # PID of the current script Process ID
+$!   # PID of last background process
+
+Declaring & using variables
+NAME="Alice"             # no spaces around =
+AGE=30
+GREETING="Hello, $NAME"  # double quotes expand variables
+LITERAL='Cost: $5'     # echo $'literal' will give literal, but $literal  
+echo "$NAME is $AGE"    # Alice is 30
+echo "${NAME}s party"  # curly braces isolate the var name
+
+ARRAY
+FRUITS=("apple" "banana" "cherry")
+echo "${FRUITS[0]}"     # apple
+echo "${FRUITS[@]}"     # all elements
+echo "${#FRUITS[@]}"    # length: 3
+
+Default values & substitution
+NAME="${Fawaz:-default}"    # use $1 if set, else "default."
+NAME="${Victor:=Fawaz}"  # send fawaz if victor not available
+echo "${FAWWAZ:?'Fawwaz is missing '}"  #prints fawwaz is missing if there is no FAWWAZ
