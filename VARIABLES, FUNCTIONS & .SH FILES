@@ -12,11 +12,33 @@ cp $1 $2 #into a file copy.sh
 after - bash copy.sh oldfile.txt newfile.txt # It copies oldfile.txt (which is $1) to newfile.txt (which is $2)
 
 $@   # all arguments as separate words
-$*   # all arguments as one string
+--------
+#!/bin/bash
+echo "Hello to: $@"
+-----
+bash greet.sh Alice Bob Charlie #Hello to: Alice Bob Charlie
+---
+$*   # all arguments as one string #echo "Hello to: $*" then bash greet.sh Alice Bob Charlie
+..........
 $#   # number of arguments
+-----
+#!/bin/bash
+echo "You gave me $# things"
+--------
+bash count.sh apple banana cake juice #output =>You gave me 4 things
+............
 $?   # exit code of last command (0 = success)
 $$   # PID of the current script Process ID
 $!   # PID of last background process
+
+Variable       Meaning
+$@        All arguments separately     Give each toy one by one
+$*       All arguments as one string   Put all toys in one bag
+$#       How many arguments            Count of toys you received
+$?       Success/fail of last command  Did it work? (0 = yes)
+$$       Current script's Process      ID My own student number 
+$!       Last background process ID
+
 
 Declaring & using variables
 NAME="Alice"             # no spaces around =
