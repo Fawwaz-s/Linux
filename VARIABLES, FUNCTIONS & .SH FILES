@@ -26,3 +26,18 @@ Default values & substitution
 NAME="${Fawaz:-default}"    # use $1 if set, else "default."
 NAME="${Victor:=Fawaz}"  # send fawaz if victor not available
 echo "${FAWWAZ:?'Fawwaz is missing '}"  #prints fawwaz is missing if there is no FAWWAZ
+
+Syntax	Meaning
+${VAR:-value}	Use value if VAR is empty/unset
+${VAR:=value}	Use value and assign it to VAR if empty/unset
+${VAR:?message}	Exit with error if VAR is empty/unset
+${VAR:+value}	Use value only if VAR is set
+
+A useful way to remember it:
+
+- → substitute
+= → substitute and save
+? → check and fail if missing
++ → use alternate value when present
+
+
