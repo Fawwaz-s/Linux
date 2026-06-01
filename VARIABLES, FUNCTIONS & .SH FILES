@@ -1,6 +1,16 @@
 ###Special / built-in variables
 $0   # name of the script itself
+--------
 $1 $2 $3  # positional args passed to script or function
+echo "My name is $1" #this in a .sh file
+echo "I am $2 years old"
+echo "I live in $3" 
+bash hello.sh Fawaz 15 Dubai # => My name is Fawaz - I am 15 years old - I live in Dubai
+-------
+#!/bin/bash
+cp $1 $2 #into a file copy.sh
+after - bash copy.sh oldfile.txt newfile.txt # It copies oldfile.txt (which is $1) to newfile.txt (which is $2)
+
 $@   # all arguments as separate words
 $*   # all arguments as one string
 $#   # number of arguments
