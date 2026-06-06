@@ -10,3 +10,9 @@ greet() {
 }
 #add 5  6 => 11
 ...........
+countdown() {
+  local N="$1"
+  (( N < 0 )) && return
+  echo "$N"
+  countdown $(( N - 1 ))
+}
