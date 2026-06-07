@@ -46,4 +46,19 @@ FLAGS
  find . -type f -name "*.txt" # Find all .txt files
  find /var -type d -name "logs"  # Find all directories named "logs" usually easier with other flags
  find /usr -type l # Find all symlinks
+-Finding by Timeline (-mtime / -newer)
+ flag -mtime (Modification Time):Finds files modified a specific number of days ago. +7 means more than 7 days ago; 
+ -7 means less than 7 days ago. 
+   find /var/log -type f -mtime -2  # Find logs modified within the last 48 hours (less than 2 days)
+ flag -newer [file]: Finds files that have been modified more recently than a specific reference file.
+  find /etc -type f -newer /backup/last_safe_backup.cfg   # Find any configuration file changed since you last made a backup file
+-Finding by Ownership (-user / -group) - Filters files based on who owns them or which team group they belong to.
+  find /home -user fawaz -group selfexplanatory
+-Finding by Security (-perm) - Filters files based on their numeric permissions. 
+  find . -type f -perm 644 #644 means the owner can read/write, but everyone else can only read.
+-Controlling Depth (-maxdepth n) - By default, find will dive down thousands of subfolders deep. 
+  flag -maxdepth sets a hard limit on how many folders deep it is allowed to travel. 
+  -maxdepth 1 means "only search the directory I point to; do not open any subfolders inside it."
+  find /etc -maxdepth 1 -name "*.conf"  # Search only the immediate /etc directory, skipping subfolders
+  e.g  -maxdepth 3 -> Depth 3: Files inside two levels of subfolders (e.g. /etc/nginx/conf.d/default.conf)
 
