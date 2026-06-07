@@ -1,0 +1,39 @@
+- GREP is your content detector — it reads lines and filters by what's inside them. 
+- FIND is your filesystem navigator — it walks directories and filters by metadata (name, size, age, permissions). 
+It never looks inside file contents.
+- CUT is your column extractor — it slices structured text by delimiter or character position. 
+Lightweight but limited to simple single-char delimiters.
+- SORT is your ordering engine — lexicographic by default, 
+but -n, -h, -V, and -k adapt it to numbers, sizes, versions, and specific fields.
+- UNIQ is your duplicate handler — but it only works on adjacent lines, 
+so it almost always needs a sort in front of it.
+The trio sort | uniq -c | sort -rn is one of the most useful patterns in all of shell scripting.
+------------------------------------------
+grep - grep [flags] pattern [file...]
+Flags.
+-i  ignores Case-insensitive match - grep -i "error" * #* search current folder for -> (ERROR, error, Error)
+-w  Match whole words only (not substrings)- grep -w "root" /etc/passwd → Only the exact word "root", not "rootkit" or "subroot"
+-r / -R Recursively search directories #grep -r "Error" my_project/
+ flag -r (or --recursive) #ignore links(like a desktop shortcut to another places) to other directories and do files of files.
+ flag -R (or --dereference-recursive) searches everything files, directories and links to other places. 
+-A n /-B n Print n lines after or before each match (these can be combined)
+  #grep -B 5 -A 3 "error" file.log -> Shows 5 lines before + 3 lines after each match.
+-H — Always print filename - grep -H "error" app.log # Output: app.log:error message here
+ useful when Searching multiple files with grep -r (recursive), or forcing filename display.
+-v — Invert match (exclude) Shows lines that do NOT contain the pattern. 
+ grep -v "DEBUG" app.log # Show all lines except DEBUG ## grep -v "^#" config.conf # Show lines that are not comments
+-o — Only show the matched part ## grep -o "http://[^ ]*" file.txt # Output: only the URLs, not the whole line
+ used for extracting specific patterns (IP addresses, emails, URLs, etc.)
+-E — Extended Regular Expressions, Extended regex (same as egrep). Enables +, ?, |
+grep -E "error|warning|failed" file.log
+grep -E "[0-9]{3}" file.log          # Match 3-digit number
+-c — Count matches #Counts how many lines match the pattern.
+ grep -c "ERROR" server.log   # e.g. output: 42
+ grep -c "error" *.log  # Count per file (all .log file)
+-n — Show line numbers Displays the line number before each matching line.
+ grep -n "function" script.sh # Output:  15:function main() {
+--color — Colorize output #Highlights the matching text in color (usually red).
+ grep --color "error" app.log
+MOST OF THESE FLAGS ARE USED TOGETHER
+.........................................................
+
