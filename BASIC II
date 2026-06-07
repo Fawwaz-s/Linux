@@ -36,4 +36,14 @@ grep -E "[0-9]{3}" file.log          # Match 3-digit number
  grep --color "error" app.log
 MOST OF THESE FLAGS ARE USED TOGETHER
 .........................................................
+find Traverse directory trees to locate files/directories matching criteria.
+- Works on metadata (name, size, time, permissions) — not file contents.
+find [path] [expression]
+FLAGS
+-Finding by Identity (-name / -iname): -name (Case-Sensitive):find . -name "report.txt" #just returns report.txt
+ flag -iname (Case-Insensitive): The "i" stands for ignore case. find . -iname "*.jpg" #all matching jpg files regardless of case
+-Finding by Structure (-type):type - f Regular file, -type d Directory Folders / directories -type l Symbolic link
+ find . -type f -name "*.txt" # Find all .txt files
+ find /var -type d -name "logs"  # Find all directories named "logs" usually easier with other flags
+ find /usr -type l # Find all symlinks
 
