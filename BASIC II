@@ -3,6 +3,9 @@
 It never looks inside file contents.
 - CUT is your column extractor — it slices structured text by delimiter or character position. 
 Lightweight but limited to simple single-char delimiters.
+-AWK - it's not just a filter, it's a full text-processing language with variables, arrays, arithmetic, functions,
+and control flow (if, for, while). It replaces several tools at once. 
+A single awk one-liner can do what would otherwise take grep | cut | sort | uniq chained together
 - SORT is your ordering engine — lexicographic by default, 
 but -n, -h, -V, and -k adapt it to numbers, sizes, versions, and specific fields.
 - UNIQ is your duplicate handler — but it only works on adjacent lines, 
@@ -102,3 +105,70 @@ The Nuclear Option: -delete
 An optimized, built-in action that instantly deletes every file that matches your search criteria.
 ⚠️ Warning: Never run a -delete command without running the search normally first to see what it hits!
 find . -type f -name "*.tmp" -delete # Instantly wipe out all temporary files in your project directory
+.........................................................................
+CUT : Extract specific columns or character ranges from each line of text. Think of it as a lightweight column selector for structured text like CSV or TSV files.
+The cut command in Linux is a fast, lightweight utility designed to slice up lines of text and extract specific pieces of data. 
+Think of it like a digital box cutter that can slice your text either vertically by columns (using a delimiter like a comma or colon) or horizontally by exact character positions.
+cut [flags] [file...]
+FLAGS
+Slicing by Columns (-d and -f) #d only works with f
+These flags are almost always used together. They allow you to cut text based on a
+specific character that separates your data fields (like a CSV file or system config).
+
+-d ':' (Delimiter)
+The -d flag specifies the delimiter—the boundary character that splits the text into columns.
+By default, cut assumes tabs, so if your file uses colons, commas, or spaces, you must declare it here.
+Example: -d ':' tells cut to treat every colon as a wall separating columns.
+
+-f 1,3 (Specific Fields)
+The -f flag stands for fields (columns). You specify exactly which column numbers you want to keep,
+separated by commas.
+Example: Extracts only the 1st and 3rd columns, throwing everything else away.
+
+-f 2-5 (Field Range)
+Instead of loose commas, you can use a dash to extract a continuous range of columns.
+Example: Extracts columns 2, 3, 4, and 5.
+ cut -d ':' -f 1,3 /etc/passwd #takes: username:password:UID:GID:GECOS:home_directory:shell -returns root:0 etc.
+daemon:1
+
+Slicing by Exact Positioning (-c and -b) -If your data doesn't have dividers like commas or colons,
+but every line has an exact layout (fixed-width text), you cut by character or byte positions instead.
+
+-c 1-10 (Character Range)
+The -c flag slices text based on character positions, regardless of what those characters are.
+Example: This will clip out exactly the first 10 characters on every line.
+
+-b (Bytes)
+The -b flag slices by exact byte positions. The Difference: In plain English text, 
+1 character equals 1 byte, so -c and -b behave identically. However, if your text contains 
+complex international characters or emojis (which take up 2 to 4 bytes per character), 
+-b cuts raw data bytes, which might split an emoji in half and cause weird text corruption.
+Stick to -c unless you are auditing raw binary data.
+
+cut -c 1-15 /var/log/auth.log # Grabs just the date/time stamp from the start of the log entries
+
+Advanced Behavior Modifiers (--complement and -s)
+--complement (The Inverter)
+This flag completely flips your selection. Instead of keeping the fields or characters you specified, 
+cut hides them and outputs everything else.
+ cut -d ':' -f 1-6 --complement etc/passwd/ -> /root:/bin/bash instead of - root:x:0:0:root:/root:/bin/bash
+
+-s (Only Only Lines Containing Delimiters)
+The -s flag stands for silent or only-delimited. By default, if cut processes a line that does not contain
+the delimiter you specified with -d, it prints the whole line unmodified. -s forces cut to completely skip 
+and ignore lines that don't match your delimiter format.
+ cut -d ':' -f 1 -s database.txt #prints fawaz from :# User Database Update /n fawaz:x:1000:1000 -ignores user database because there is no delimiter :
+.....................................................................
+AWK - It scans each line of input, tests it against patterns, and executes actions on matches. 
+Think of it as a programmable grep + cut + sort with arithmetic and variables built in.
+SYNTAX: awk [flags] 'pattern { action }' [file...]
+NOTABLE USE CASES
+- The !seen[$0]++ — it removes duplicate lines while preserving original order, something sort | uniq can't do.
+  awk '!seen[$0]++' yo.txt # print unique entries in yo.txt, even  awk '!seen[$0]++' yo.txt > ymca.txt
+
+-  The NR==FNR join pattern in the pipelines tab is one of the most practical things to memorise — it lets you enrich one file's data with lookups from another, essentially a SQL JOIN in a one-liner.
+
+
+
+
+
