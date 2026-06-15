@@ -196,6 +196,21 @@ NOTABLE USE CASES
     #Finding Missing Configurations (Diffing Data) show configuration keys are present in your default 
     reference template (template.conf), but are missing from a specific client machine's file (client.conf).
 
+BUILT-IN AWK VARIABLES
+The Line and Field Selectors ($0, $1, $2...) 
+# $0: Represents the whole line exactly as it was read. printS the complete, unaltered raw data.
+# $1, $2...$N: References specific columns. By default, awk splits these columns anywhere it sees spaces or tabs.
+  e.g. awk '{print $1, $4}' tok.txt #prints first and fourth values of tok.txt
+
+The Dynamic Tail Targets (NF, $NF, $(NF-1))
+The NF variable tracks the Number of Fields (columns) on the current line. Crucially, putting
+ a dollar sign in front of it—$NF—tells awk to print the value of the column numbered NF.
+Why it's vital: In log files, lines often have different lengths. If line A has 4 words and line B has 7 words, 
+ you can't rely on $4 to grab the final word. $NF always hits the end of the line, regardless of how messy or variable the line length is.
+.e.g. awk '{print $NF}' /var/log/auth.log  # Safely prints the absolute last column of every log entry
+   awk '{print $(NF-1)}' /var/log/auth.log # Safely prints the second-to-last column
+NR (Number of Records): A global row counter that tracks how many total lines awk has processed since the command started.
+ awk '{print NR, $0}' server.log #cats the file and each line is numbered
 
 
 
