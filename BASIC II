@@ -166,8 +166,35 @@ NOTABLE USE CASES
 - The !seen[$0]++ — it removes duplicate lines while preserving original order, something sort | uniq can't do.
   awk '!seen[$0]++' yo.txt # print unique entries in yo.txt, even  awk '!seen[$0]++' yo.txt > ymca.txt
 
--  The NR==FNR join pattern in the pipelines tab is one of the most practical things to memorise — it lets you enrich one file's data with lookups from another, essentially a SQL JOIN in a one-liner.
+-  The NR==FNR join pattern in the pipelines tab is one of the most practical things to memorise —
+ it is used to join or compare two separate files based on a matching key.
+ Think of it as a command-line version of an SQL INNER JOIN, a VLOOKUP in Excel, 
+ or merging two dataframes in Python.
+  - awk uses two built-in counters when processing files.:
+   *NR (Number of Records): This is a global row counter. It starts at 1 on the first line of the first file,
+   and keeps counting up continuously, across every file you pass into the command.
+   *FNR (File Number of Records): This is a local row counter. It resets back to 1 every time awk opens a
+   new file.
+   SYNTAX - FIRST PART
+   NR==FNR { array[$1]=$2; next }
+    -Because NR==FNR is true, this entire block executes for every line of first file.
+    -array[$1]=$2: It creates an associative array (like a dictionary or map). It uses the data in column 1 ($1)
+     as a lookup key, and maps it to the value in column 2 ($2).
+    -next: This is a crucial keyword. It tells awk to stop processing the current line immediately,
+    skip any code that follows, and grab the next line. This ensures the second part of our script
+    doesn't run while we are still inside the first file.
+   --Example:
+    awk 'NR==FNR { name[$1]=$2; next } $1 in name { print $0, name[$1] }' users.txt logins.txt
+    #this looks up inputs from users in login and merges them, it can also be parsed into a new file with >
 
+    awk 'NR==FNR { IPs[$1]; next } $3 in IPs' blacklist.txt access.log
+    #Read a list of blacklisted IP addresses from blacklist.txt, then print only the log entries whose 
+    IP address appears in that blacklist.
+    #IPs in access.log is on the 3rd column
+
+    awk 'NR==FNR { keys[$1]; next } !($1 in keys)' client.conf template.conf
+    #Finding Missing Configurations (Diffing Data) show configuration keys are present in your default 
+    reference template (template.conf), but are missing from a specific client machine's file (client.conf).
 
 
 
