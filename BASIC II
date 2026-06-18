@@ -223,7 +223,7 @@ FS lets you change that divider character.
 Context: If you are reading a CSV file or /etc/passwd, columns aren't separated by 
 spaces—they are separated by commas or colons.
 How to set it: You can use the -F flag on the command line, or define it inside a BEGIN block (code that runs before awk opens the file).
-awk -F ':' '{print $1}' /etc/passwd # Slicing a colon-separated file using the command-line flag
+awk -F ':' '{print $1}' /etc/passwd # 
 awk 'BEGIN {FS=":"} {print $1}' /etc/passwd # Doing the exact same thing inside a BEGIN block
 
 OFS (Output Field Separator)
@@ -383,6 +383,9 @@ print index($0, "company.com")
 
 String Splitters & Extractors (split and substr) 
 These functions cut strings down into smaller, structured components.
+split(string, array, separator  # Break a big thing into many pieces
+
+substr() = Cut out one specific piece
 
 split - (string, array, separator)
 The Mechanics: Takes a single string s, chops it up wherever it finds the separator character sep, and dumps the resulting fragments into an array named a. It returns the total number of elements created.
