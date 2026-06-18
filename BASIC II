@@ -191,7 +191,7 @@ NOTABLE USE CASES
     awk 'NR==FNR { name[$1]=$2; next } $1 in name { print $0, name[$1] }' users.txt logins.txt
     #this looks up inputs from users in login and merges them, it can also be parsed into a new file with >
 
-    awk 'NR==FNR { IPs[$1]; next } $3 in IPs' blacklist.txt access.log
+    awk 'NR==FNR { IPs[$1]; next } $3 in IPs' blacklist.txt access.log #IPs is the title of the column you want. 
     #Read a list of blacklisted IP addresses from blacklist.txt, then print only the log entries whose 
     IP address appears in that blacklist.
     #IPs in access.log is on the 3rd column
@@ -253,6 +253,16 @@ EXAMPLE: Ip.log
 10.0.0.2
 10.0.0.3
 awk 'BEGIN {ORS=" "} {print $0}' ip_list.txt #Output: 10.0.0.1 10.0.0.2 10.0.0.3
+
+BEGIN AND END
+BEGIN - Is used to work or set variable before awk actually starts to read the first line or $1.
+usually for things only need to happen once: Print headers, Initialize variables, Set separators, Read configuration etc.
+e.g: awk 'BEGIN { print "Name Age" ; print "--------"} { print } ' file.txt #adds title age and --- to file.txt
+END - Runs once, after the last line has been processed.
+Because by then AWK has seen: Every record, Every field, Every calculation
+awk 'NR>1 { print $4 * 100 / 5 } END { print "Total student:", NR-1 }' my.txt #NR>1 skips the title because its not an integer
+together : awk ' BEGIN { FS =":" ; OFS =","} {print $1, $3 *10,$7} END {print NR}' /etc/passwd
+
 
 FILENAME VARIABLE- 
 example: two Files: server1.log & server2.log 
@@ -319,7 +329,63 @@ $5 > 500 # <,>, >= and <=
 && (AND) #Both conditions must be true. #awk '$2 >= 18 && $3 == "Paris"'
 || (OR) #awk '$3=="Paris" || $3=="London"' At least one condition must be true.
 
+BUILT-IN FUNCTIONS OF AWK
+STRINGS:
+The Search-and-Replace Tools (sub and gsub)
+sub(/p/, r) and sub(/p/, r, s)
+The Mechanics: sub replaces only the first occurrence of pattern p with replacement r.
+ *If you don't provide a third argument, it modifies the entire current line ($0) in place.
+ *If you do provide a third argument s, it targets and modifies that specific variable or column instead of $0.
+gsub(/p/, r)
+The Mechanics: The "g" stands for global. It replaces every single occurrence of pattern p across the text string, 
+not just the first one.
+awk '{sub(/\/opt\/internal\/app\//, "APP_HOME/"); #Replace only the first occurrence of the internal path prefix
+   gsub(/0x[0-9a-fA-F]+/, "HEX_REDACTED");  # Replace ALL hex addresses globally across the entire row
+print $0;
+}' application.log
+NOTE: In awk, a regex is written between two / / (forward slashes). These are delimiters.
+ \ in regex means: treat next literally, eg. /192.168/ in awk will give unnecessary output 
+ to precise /192\.168/ #\ tells awk its an ordinary .
+for this context,  every / in the path /opt/internal/app/ must be written as \/
+awk '{ sub(/error/, "issue"); print }' file.log # Replace first occurrence of "error" with "issue"
+awk '{ gsub(/error/, "issue"); print }' file.log # Replace all occurrences of "error" with "issue"
+awk '{ gsub(/old/, "new", $3); print }' data.txt # Replace only in column 3
 
+The Pattern Locators (match and index)
+match(s, /p/) - match(string, regex)
+The Mechanics: Searches string s for a regular expression pattern p. It returns the exact starting 
+position character index ($1$-indexed). Crucially, it sets two internal tracking variables:
+RSTART: The character index where the match began. 
+RLENGTH: The exact number of characters the match spanned.
+e.g BEGIN {
+    print match("Error 500", /[0-9]+/) #[0-9] regex for search 0 to 9 so output will be the index 5 which is 7
+} # could also be /[abc]/
+IMAGINE: A file access.log :
+User login req_id=ABC123
+Payment complete req_id=XYZ789
+Hello world........
+awk '{  # Look for 'req_id=' followed by alphanumeric characters
+  if (match($0, /req_id=[A-Z0-9]+/))   {
+    # Extract only the value portion using RSTART and RLENGTH
+    # We add 7 to skip the literal string "req_id="
+    token = substr($0, RSTART + 7, RLENGTH - 7);
+    print "Found Token: " token;
+  }
+}' access.log
 
+index(s, t) - index(string, search_text)
+The Mechanics: A lightweight, faster alternative to match. It searches string s for a literal static string t 
+(no regex allowed). Returns the starting position, or 0 if the string isn't found.
+BEGIN {
+    print index("Hello World", "World")
+} #output will be 7 #its usually faster and easier than regex : $0 ~ /company\.com/
+print index($0, "company.com")
 
+String Splitters & Extractors (split and substr) 
+These functions cut strings down into smaller, structured components.
 
+split - (string, array, separator)
+The Mechanics: Takes a single string s, chops it up wherever it finds the separator character sep, and dumps the resulting fragments into an array named a. It returns the total number of elements created.
+
+substr(s, i, n)
+The Mechanics: Extracts a localized piece of string s. It starts at character position i and captures a length of exactly n characters. If you omit n, it captures everything from position i to the absolute end of the string.
