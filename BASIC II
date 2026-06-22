@@ -12,6 +12,84 @@ but -n, -h, -V, and -k adapt it to numbers, sizes, versions, and specific fields
 so it almost always needs a sort in front of it.
 The trio sort | uniq -c | sort -rn is one of the most useful patterns in all of shell scripting.
 ------------------------------------------
+read command in Linux is a shell built-in that takes input and stores it in variables
+Syntax : read -p "Prompt message: " variable_name #like the input function in python
+example : read -p "Enter your username: " username #inputs the entry
+echo "Welcome, $username!"
+
+-s (Silent / Secret Mode)
+The -s flag hides the user's input from the terminal screen as they type it. This is crucial for privacy and security.
+Syntax: read -s -p "Prompt: " variable_name (Note: Often combined with -p)
+use case: useful for passwords and pass code
+read -s -p "Enter a password: " password |echo -e "\nPassword logged successfully"  
+#note: -s -p flags not to be combined, | is also && \ 
+
+-n and -N (Character Limit)
+These flags limit the number of characters "read" will accept before automatically moving on, 
+without requiring the user to press Enter.
+-n [num]: Returns as soon as [num] characters are typed, or if the user presses Enter early.
+read -n 3 -p "Enter 3 chars (or press Enter early): " input | echo -e "\nYou entered: $input"
+#with n, if you press Enter without reaching 3 characters it outputs your response as is.
+-N [num]: Ignores Enter and forces the shell to wait until exactly [num] characters are typed.
+read -N 3 -p "Enter exactly 3 chars: " input | echo -e "\nYou entered: $input"
+#with N, pressing Enter is registered as a character
+
+-t (Timeout)
+The -t flag sets a countdown timer in seconds. If the user doesn't provide input before the timer expires, the command exits with a non-zero status, and the script moves on.
+Syntax: read -t [seconds] variable_name
+if read -t 5 -p "Press Enter to interrupt backup (5s)..." input; then 
+    echo "Backup canceled by user."
+else
+    echo "Timeout reached. Starting backup..." #ends after 5 seconds countdown
+fi #end of if statement
+
+-r (Raw Mode)
+By default, read treats the backslash (\) as an escape character. If you type file\name, read interprets it as 
+filename. The -r flag disables this behavior, treating backslashes literally.
+# Without -r
+read -p "Enter a path: " path1   # User types: C:\Users\Name
+echo "$path1"                    # Outputs: C:UsersName
+# With -r
+read -r -p "Enter a path: " path2 # User types: C:\Users\Name
+echo "$path2"                    # Outputs: C:\Users\Name
+
+-a (Array)
+Instead of assigning the input to a single string variable, -a assigns the words (split by whitespace) into an array.
+Syntax: read -a array_name
+read -a fruits -p "Enter fruits separated by spaces: "
+echo "First fruit: ${fruits[0]}"
+echo "Second fruit: ${fruits[1]}"
+echo "Third fruit: ${fruits[2]}"
+echo "All fruits: ${fruits[@]}"
+
+-d (Delimiter)
+By default, read stops reading when it hits a newline character (when you press Enter). The -d flag changes that terminator to any character you specify.
+Syntax: read -d 'character' variable_name
+password.txt: mypassword123 
+read -r -d ' ' password < password.txt # ' ' is the delimiter
+echo "$password"
+---------
+echo "Alice,25,France" | {
+    read -d ',' name
+    echo "Name: $name"
+}
+-----
+combined use case 
+#!/bin/bash
+echo "=== Security Check ==="
+# Wait 10 seconds for a 4-digit PIN, hidden from screen, literal backslashes
+if read -rsn 4 -t 10 -p "Enter your 4-digit PIN: " pin; then #-r is needed incase pass includes \ which is a variable in bash
+    echo -e "\nProcessing PIN..."
+    if [ "$pin" == "1234" ]; then
+        echo "Access Granted."
+    else
+        echo "Access Denied."
+    fi
+else
+    echo -e "\nTime ran out!"
+fi
+
+------------------------------------------
 grep - grep [flags] pattern [file...]
 Flags.
 -i  ignores Case-insensitive match - grep -i "error" * #* search current folder for -> (ERROR, error, Error)
@@ -383,12 +461,27 @@ print index($0, "company.com")
 
 String Splitters & Extractors (split and substr) 
 These functions cut strings down into smaller, structured components.
-split(string, array, separator  # Break a big thing into many pieces
+split - (string, array, separator) # Break a big thing into many pieces
+Takes a string and divides it into parts based on a separator.
+File named scofield.txt:
+John,25,Developer
+Sarah,30,Manager
+...
+awk {split($0, info, ","); print "Name:", info[1]; print "Age:", info[2]; print "Job:", info[3]} ' scofield.txt
+output : Name: John
+Age: 25
+Job: Developer
+Name: Sarah
+Age: 30
+Job: Manager
+awk 'BEGIN { text = "apple,banana,orange"; split(text, fruits, ","); print fruits[1]; print fruits[2]}; print[3]'
+#output will be text in vertical list
 
-substr() = Cut out one specific piece
-
-split - (string, array, separator)
-The Mechanics: Takes a single string s, chops it up wherever it finds the separator character sep, and dumps the resulting fragments into an array named a. It returns the total number of elements created.
-
-substr(s, i, n)
-The Mechanics: Extracts a localized piece of string s. It starts at character position i and captures a length of exactly n characters. If you omit n, it captures everything from position i to the absolute end of the string.
+substr(source, start, length) - Cut out one specific piece
+awk 'BEGIN { text = "HelloWorld";  print substr(text, 1, 5)}' #Output :Hello
+If length is omitted, AWK returns everything from that position onward.
+awk 'BEGIN { text = "HelloWorld";  print substr(text, 6 )}' #Output :World
+awk'{year  = substr($0, 1, 4); month = substr($0, 6, 2); day   = substr($0, 9, 2); print year, month, day}'
+#output: 2026 06 18
+awk 'BEGIN { record = "user:john@example.com"; print "web type:" substr(record, length(record)-3) }'
+# output- web type:.com #lenght(record) -3 means . is located on the 18th character, 21 character in total so 21 - 3 = 18
