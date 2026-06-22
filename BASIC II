@@ -485,3 +485,45 @@ awk'{year  = substr($0, 1, 4); month = substr($0, 6, 2); day   = substr($0, 9, 2
 #output: 2026 06 18
 awk 'BEGIN { record = "user:john@example.com"; print "web type:" substr(record, length(record)-3) }'
 # output- web type:.com #lenght(record) -3 means . is located on the 18th character, 21 character in total so 21 - 3 = 18
+
+length(s)
+awk'BEGIN { print length("Hello")}' #prints 5 
+awk '{ if (length($0) > 80) print "Long line:", $0}
+--
+awk 'BEGIN {split("a,b,c", arr, ",");print arr[1];print arr[2];print arr[3];print "Total:", length(arr)}'
+#output a b c Total: 3
+
+tolower(s) / toupper(s) -Converts all letters to lowercase.
+awk 'BEGIN { print tolower("HELLO WORLD")}' #hello world
+Example
+#!/bin/bash
+read -p "Department: " dept
+dept_lower=${dept,,} #The double comma ,, means "convert the entire string to lowercase".
+dept_upper=${dept^^} #The double caret ^^ means "convert the entire string to uppercase".
+echo "Lowercase: $dept_lower"
+echo "Uppercase: $dept_upper"
+
+sprintf() creates and returns a formatted string #Build the message.
+printf() prints the formatted string immediately #says the message and no newline \n afterwards
+
+Specifier      Meaning     Example
+  %s           string      "hello"
+  %d          integer        42
+  %f          float          3.14
+  %e     scientific notation 3.14e+00
+  %g     shorter of %f or %e  3.14
+  %c     single character     A
+  %o        octal             52
+  %x       hex lowercase      2a
+  %X       hex uppercase      2A
+  %%       literal %         sign%
+
+awk 'BEGIN { printf("Age: %d\n", 25) }' #output : Age: 25
+awk 'BEGIN { printf("Price: %.2f\n", 4.5678) }' #%.2f == 2 float, this case output: 4.57
+awk 'NR>1 {printf("%c %s %d\n", $1, $2, $3)}' ebi #NR>1 means skip the title (first line)
+
+sprintf(fmt, ...)
+Formats text exactly like printf(), but instead of printing it, it returns the result as a string.
+awk 'BEGIN { wasp = sprintf("Fawaz is %d years old", 31); print wasp }' #output: Fawaz is 31 years old
+
+awk 'BEGIN {filename = sprintf("report_%s.txt", "2026") print filename }' #report_2026.txt
