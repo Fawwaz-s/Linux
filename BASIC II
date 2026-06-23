@@ -527,3 +527,54 @@ Formats text exactly like printf(), but instead of printing it, it returns the r
 awk 'BEGIN { wasp = sprintf("Fawaz is %d years old", 31); print wasp }' #output: Fawaz is 31 years old
 
 awk 'BEGIN {filename = sprintf("report_%s.txt", "2026") print filename }' #report_2026.txt
+
+common programs - awk one-liners and short programs that cover the most frequent real-world tasks.
+# Print specific columns (like cut, but smarter)
+awk '{ print $1, $3, $5 }' file.txt
+awk -F ',' '{ print $2, $4 }' data.csv   # CSV
+# Sum a column
+awk '{ sum += $3 } END { print "Total:", sum }' sales.txt
+# Calculate average
+awk '{ sum += $1; count++ } END { printf "Avg: %.2f\n", sum/count }' nums.txt
+# Skip header, process rest
+awk 'NR > 1 { print $1, $2 }' report.csv
+# Print lines matching a condition
+awk '$5 >= 500 { print $0 }' access.log     # HTTP 5xx errors
+awk '$2 == "WARN" || $2 == "ERROR"' app.log
+# Count occurrences by key (frequency map)
+awk '{ count[$1]++ } END { for (k in count) print count[k], k }' ips.txt
+# Reformat output with custom separator
+awk 'BEGIN { OFS="," } { print $1, $3, $5 }' data.tsv
+# Remove duplicate lines (preserving order)
+awk '!seen[$0]++' file.txt   # no sort needed — order preserved
+# Add a line number prefix
+awk '{ print NR": "$0 }' file.txt
+# Print lines between two markers
+awk '/BEGIN_SECTION/,/END_SECTION/ { print }' config.txt
+# Replace a field value
+awk '{ $3 = $3 * 1.1; print }' OFS=',' prices.csv
+awk 'BEGIN {FS = " "; OFS = "-"}  {$3=$3*1.3; print}' prices.csv
+# Multi-file: print filename with each line
+awk '{ print FILENAME": "$0 }' *.log
+
+# Top 10 most-requested URLs in nginx log
+awk '{ print $7 }' access.log | sort | uniq -c | sort -rn | head -10
+# Sum disk usage per user
+find /home -type f | xargs du -s | awk '{ total[$2]+=$1 } END { for (u in total) print total[u], u }' | sort -rn
+# Extract error messages with timestamps
+awk '/ERROR/ { print $1, $2, $NF }' app.log | sort -u
+# Convert CSV to TSV
+awk 'BEGIN { FS=","; OFS="\t" } { $1=$1; print }' data.csv
+# Process ps output — show memory hogs
+ps aux | awk 'NR>1 && $4 > 1.0 { printf "%-20s %s%%\n", $11, $4 }' | sort -t'%' -k1 -rn
+# Average response time from a log
+grep "GET /api" access.log | awk '{ sum+=$NF; n++ } END { printf "Avg: %.1fms\n", sum/n }'
+# Join two files on a common key (manual join)
+awk 'NR==FNR { a[$1]=$2; next } $1 in a { print $0, a[$1] }' users.txt orders.txt
+
+
+
+
+
+
+
