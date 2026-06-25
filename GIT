@@ -19,6 +19,14 @@
    Best Practices
    - Use git commit -am when you’re sure you want to commit all changes to tracked files.
    - Use git commit -m when you want to be selective (recommended for bigger projects or team work).
+* git log  - Shows commit history.
+   git log
+   git log --oneline #short
+   git log --graph --oneline
+* git diff #Shows changes.
+  git diff --staged #modern
+  git diff --cached
+   
 
 *Git clone
 syntax: git clone <repository-url> #git clone https://github.com/user/project.git
