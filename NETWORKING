@@ -25,19 +25,6 @@ PORT RANGES
 1024 - 49151  → Registered ports (applications)
 49152 - 65535 → Dynamic/private ports (temporary)
 
-###
-
-Git clone
-syntax: git clone <repository-url> #git clone https://github.com/user/project.git
-git clone https://github.com/user/project.git myapp #creates the clone and inserted in the file myapp
-
-Clone Using SSH
-git clone git@github.com:user/project.git
-Requires SSH keys.
- - Advantages: No password prompts
-
-Clone a Specific Branch: Normally, Git clones all branches and checks out the default branch.
-- git clone -b development https://github.com/user/project.git
 
 ###Curl 
 Transfer Data From Servers -it fetches web content from the terminal.
