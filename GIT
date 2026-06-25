@@ -26,7 +26,33 @@
 * git diff #Shows changes.
   git diff --staged #modern
   git diff --cached
-   
+
+* git branch - Shows branches.
+   git branch # Output: * main dev
+ git branch feature-login #Create branch
+ git branch -d feature-login #Delete branch
+ git branch -D feature-login #Force delete
+
+*git checkout - Switch branches.
+  git branch # Shows you all your branches (like listing all copies)
+  git branch flying-cat # Creates a new branch (makes a copy)
+  git checkout flying-cat # Switches to that branch (try out new idea on this copy)
+  git checkout -b flying-cat #create and switches to the new branch
+ --git switch flying-cat  #modern replacement for checkout
+  git switch -c flying-cat #create and switches to the new branch
+
+*git merge - Combines branches.
+  git switch main
+  git merge feature-login #output: main now contains feature-login code
+
+*git remote - A remote is a link to another copy of your project that lives somewhere else — usually on the internet (GitHub, GitLab, Bitbucket, etc.).
+  git remote -v #Shows all remotes + their URLs (Most used)
+  git remote add origin <url> # Adds a new remote (usually after creating repo) e.g git remote add origin https://github.com/user/project.git 
+  git remote remove origin # Deletes a remote
+  git remote rename origin main-origin  # Renames a remote
+  git remote show origin # Shows detailed info about a remote    (Useful for checking)
+
+
 
 *Git clone
 syntax: git clone <repository-url> #git clone https://github.com/user/project.git
