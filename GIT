@@ -1,0 +1,78 @@
+### Git - Git is a fast, open-source distributed version control system (VCS) designed to track changes in source code and files over time.
+ With Git, every developer has a full copy of the project's history on their local machine. You can commit changes, view history, and switch branches entirely offline.
+ You only need an internet connection when you want to share your changes with others.
+
+* git init - Initializes a brand-new, empty Git repository in your current folder. #Initialized empty Git repository
+* git status - Shows what's happening right now.
+  git status -s #flag for short form, opposite of -verbose
+* git add - Moves changes to the staging area.
+ git add app.py #adds a file
+ git add file1 file2 #adds multiple files
+ git add . #adds everything current directory
+ git add -A #adds everything current directory including deleted files
+* git commit - Creates a snapshot. eg.git commit -m "Added login page" #saves progress
+    #It only commits files that are already in the staging area (what you added with git add).
+    #You have full control — you can choose which changes to include.
+ git commit -am "message" (or -a -m) #The -a flag = --all
+    # Git automatically does git add for all modified tracked files before committing.
+    # Very convenient when you’ve only edited existing files and want to commit everything quickly.
+   Best Practices
+   - Use git commit -am when you’re sure you want to commit all changes to tracked files.
+   - Use git commit -m when you want to be selective (recommended for bigger projects or team work).
+
+*Git clone
+syntax: git clone <repository-url> #git clone https://github.com/user/project.git
+git clone https://github.com/user/project.git myapp #creates the clone and inserted in the file myapp
+
+Clone Using SSH
+git clone git@github.com:user/project.git
+Requires SSH keys.
+ - Advantages: No password prompts
+
+Clone a Specific Branch: Normally, Git clones all branches and checks out the default branch.
+- git clone -b development https://github.com/user/project.git
+* git config - git config is Git’s command to view, set, and edit configuration settings. It controls almost everything in Git: your name/email,
+ editor, default branch, aliases, colors, behavior, etc.
+Configuration Levels (Very Important)
+Git stores settings in 3 main layers. Higher layers override lower ones.
+Level      Command Flag            Scope                 File Location        Use Case 
+System      --system     All users on the computer       /etc/gitconfig    Admin-wide settings
+Global      --global     Your user account (all repos)   ~/.gitconfig     Most common (name, email, editor)
+Local       (default)    Only current repository         .git/config     (inside the repo)Repo-specific settings
+# Rule of thumb: Use --global for your name and email.
+--
+git config --global user.name "Fawwaz"
+git config --global user.email "fawwaz@example.com"
+--
+git config --global --list          # show all users 
+git config --list                   # local + global (shows effective)
+git config --list --show-origin     # shows which file each setting comes from
+--
+git config --global --unset user.email #remove user email and can also be used for name
+git config --global --edit # opens an editor to edit user info
+-- 
+git config user.name #Verify it worked
+git config user.email
+-- 
+(without --global):
+Bashgit config user.name "Your Name"     # only current repositories
+git config user.email "your@email.com"
+--
+# Default editor
+git config --global core.editor "code --wait"     # VS Code
+# or
+git config --global core.editor "vim"
+
+# Default branch name (main instead of master)
+git config --global init.defaultBranch main
+
+# Aliases (shortcuts)
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.lg "log --oneline --graph --all"
+
+# Nice colors
+git config --global color.ui auto
+
+
