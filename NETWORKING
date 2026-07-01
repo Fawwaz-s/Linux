@@ -25,6 +25,16 @@ PORT RANGES
 1024 - 49151  → Registered ports (applications)
 49152 - 65535 → Dynamic/private ports (temporary)
 
+###Ping
+The ping command tests whether a host is reachable over the network by sending ICMP echo requests and waiting for replies.
+Syntax - ping google.com
+Useful options:
+-c 4 sends 4 packets and stops.
+-i 2 waits 2 seconds between packets.
+-4 forces IPv4.
+-6 forces IPv6.
+You stop an infinite ping with Ctrl+C, and the summary shows packet loss and round-trip times.
+
 
 ###Curl 
 Transfer Data From Servers -it fetches web content from the terminal.
