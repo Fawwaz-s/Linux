@@ -1,0 +1,33 @@
+Command               	Purpose
+ls	            List files and directories
+cd	            Change the current directory
+pwd           	Print the current working directory
+cat           	Display or combine file contents
+echo	          Print text or variables
+man	            Display a command's manual page
+history	        Show previously executed commands
+clear	          Clear the terminal screen
+
+ls — List Directory Contents...Displays the files and folders in the current directory.
+Syntax: ls [options] [directory]
+ Flag     Description              
+-l       Long listing format (permissions, owner, size, date) 
+-a   Show hidden files (those beginning with `.`)         
+-h   Human-readable file sizes (used with `-l`)           
+-R   Recursively list subdirectories                      
+-t   Sort by modification time                            
+-S   Sort by file size                                    
+
+cd — Change Directory....Moves between directories.
+Syntax: cd directory
+Command    	Meaning
+cd	      Go to home directory
+cd ..   	Move up one directory
+cd -    	Return to previous directory
+cd ~    	Go to home directory
+cd /    	Go to filesystem root
+
+pwd — Print Working Directory....Displays the full path of your current location.
+Syntax: pwd
+Flag  	 Description
+-P	   Show the physical path (resolve symbolic links)
