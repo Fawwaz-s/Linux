@@ -19,7 +19,6 @@ ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem #custom format: PID, Parent PID, Comm
 ps -C nginx -o pid,user,cmd,%cpu,%mem #Shows all nginx processes with their resource usage
   # -C nginx: filter to processes whose command name is nginx.
 . #-o pid,user,cmd,%cpu,%mem tells ps to print only those fields, in that order
-watch 'ps -C postgres -o pid,user,time,%cpu,%mem --no-headers' #monitoring specific service
 
 WATCH runs a command repeatedly at a fixed interval and refreshes the terminal display so you can see changes over time.
 By default, watch reruns the command every 2 seconds and keeps going until you stop it with Ctrl+C.
@@ -34,4 +33,108 @@ FLAGS
 Practical examples
 watch df -h: keeps an eye on disk space.
 watch free -m: monitors memory usage.
-watch "ps aux | grep nginx": repeatedly checks for nginx-related processes. Quoting is important when using pipes or multiple shell operators
+watch "ps aux | grep nginx": repeatedly checks for nginx-related processes. Quoting is important when using pipes or multiple  shell operators
+watch 'ps -C postgres -o pid,user,time,%cpu,%mem --no-headers' #monitoring specific service
+
+TOP (Table of Processes)- displays overall system stats such as uptime, load average, task counts, CPU usage, memory, and swap usage. 
+Below that, it lists individual processes with columns like PID, user, CPU, memory, running time, and command.
+Basic Syntax: top [options]
+Flag            	Description
+-u [user]   	Show only specific user's processes #top -u nginx -  User-Specific Monitoring
+-p [PID]     	Monitor specific PIDs only #top -p 1234,5678,9012 - Monitor Multiple PIDs
+-n [count]  	Number of iterations before exiting #top -b -n 1 -o %MEM | head -20 - Batch Mode for Scripting
+-d [seconds]	 Delay between refreshes
+-b	           Batch mode (non-interactive) #method of processing data where a program executes a series of commands or processes without user interaction.
+-H	           Show threads
+-i	           Ignore idle processes
+
+Interactive Commands (Inside top):
+Key	         Action
+P     	Sort by CPU usage (default)
+M     	Sort by Memory usage
+T     	Sort by Time/Running time
+N	      Sort by PID
+k	      Kill a process (enter PID)
+r	      Renice a process #changes the priority of a process that's already running — it doesn't start a new one
+f     	Select which columns to display
+o	      Change sort field
+u	      Filter by user
+H	      Toggle thread view
+e	      Toggle memory units
+q	      Quit
+1	      Show per-CPU usage (for multi-core)
+
+HTOP (Interactive Process Viewer) - is an interactive, real-time process viewer — basically a nicer, more usable version of top.
+Basic Syntax: htop [options]
+Flag	               Description
+-u [user]	      Show only specific user  #user htop -u mysql - user isolation
+-p [PID]	      Show only specific PID
+-t	            Tree view mode
+-s [COLUMN]	    Sort by specific column #htop -s PERCENT_MEM - sorts by memory percentage instead of the default
+-d [seconds]  	Delay between updates
+-C	            Use monochrome colors
+--pid [PID]	    Same as -p
+
+Interactive Commands (Inside htop):
+Key	            Action
+F1 or h        	Help
+F2 or S     Setup/Menu
+F3 or /	     Search
+F4 or \    	Filter processes
+F5 or t	   Tree view toggle
+F6	     Sort by selected column
+F7 or ]	 Increase niceness (lower priority)
+F8 or [	 Decrease niceness (higher priority)
+F9 or k	  Kill process
+F10 or q   	  Quit
+Space     	Tag process
+U	      Show processes of current user only
+u	      Show processes of specific
+P      	Sort by CPU
+M     	Sort by Memory
+T     	Sort by Time
+I     	Invert sort order
+H     	Show/Hide user threads
+K     	Show/Hide kernel threads
+F	      Follow process
+e	      Show environment variables
+
+Setup Menu (F2) Features:
+* Columns: Choose displayed columns (ST_UID, PID, PPID, CPU%, MEM%, etc.)
+* Colors: Customize color scheme
+* Meters: Add/remove CPU/Memory/Swap meters
+* Display options: Toggle tree view, hide threads, etc.
+
+COMPARISON TABLE:
+Feature       	PS                	TOP	                 HTOP
+Output	      Static        	Dynamic (real-time)  	Dynamic (real-time)
+Interface 	Non-interactive	    Semi-interactive	    Fully interactive
+Colors        	No	               Limited	         Full color support
+Tree View	     Yes (ps auxf)       	No	                 Yes (F5)
+Mouse Support	  No                 	No	                 Yes
+Kill Process	External tool   	Yes (interactive)	     Yes (interactive)
+Memory Units	   Fixed	           Fixed	            Human-readable (auto)
+Custom Columns	Yes (-o)	        Limited               	Extensive (F2)
+Search/Filter 	External tool	    Limited	                 Yes (F3/F4)
+Suitable For: 	Scripting,      Quick system overview	   In-depth investigation
+               single snapshot	
+CHOOSE THE RIGHT TOOL:
+Use ps when:
+- Writing scripts and automation
+- Need to capture a single snapshot
+- Processing output with grep/awk/sed
+- Remote monitoring via SSH (minimal overhead)
+
+Use top when:
+- Quick system health check
+- Limited system resources (minimal overhead)
+- Standard across all Linux distros (always available)
+- Need simple real-time monitoring
+
+Use htop when:
+- Deep investigation and troubleshooting
+- Need tree view for process hierarchy
+- Want better visual interface
+- Need to kill/reprioritize processes interactively
+- Working on development/debugging
+- Have it installed (not always default)
