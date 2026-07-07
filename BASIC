@@ -31,3 +31,209 @@ pwd — Print Working Directory....Displays the full path of your current locati
 Syntax: pwd
 Flag  	 Description
 -P	   Show the physical path (resolve symbolic links)
+
+cat — Concatenate and Display Files....Displays the contents of files or combines multiple files.
+Syntax: cat [options] file
+Flag        	Description
+-n	      Number all output lines
+-b	      Number non-empty lines only
+-E	      Show $ at the end of each line    #use-case: Detecting Trailing Whitespace (Spaces/Tabs)
+-T      	Display tabs as ^I               #use-case: Debugging Python/YAML Indentation Errors i.e differentiate good indentation tab from space error
+
+echo — Print Text...Outputs text or variable values.
+Syntax: echo [options] text
+Flag	    Description
+-n	    Don't print a newline
+-e    	Enable interpretation of escape sequences
+
+man — Manual Pages....Shows the built-in documentation for commands.
+Syntax: man command
+Flag   	Description
+-k 	   Search manual pages by keyword  #man -k copy
+-f   	Show a short description (equivalent to whatis) #man -f ls
+Navigation - Inside man:
+Key       	Action
+Space    	Next page
+b	        Previous page
+/         text	Search
+n        	Next search result
+q        	Quit
+
+history — Command History....Shows commands you've previously executed.
+Syntax: history
+Option	          Description
+history N    	Show the last N commands his
+history -c   	Clear the current shell's history list
+history -d    OFFSET	Delete the history entry at a given position
+
+Note: history -c clears the current shell's in-memory history. Depending on your shell configuration, the history file on disk may also need to be updated
+(for example, by exiting the shell) For the change to persist.
+TO WORK WITH HISTORY
+!45 #Run command number 45 again
+!! #Run the previous command
+!git #Repeat the last command that started with git
+
+Command       	Purpose
+cp	     Copy files and directories
+mv     	Move or rename files and directories
+rm     	Remove files and directories
+mkdir  	Create directories
+rmdir  	Remove empty directories
+touch	  Create empty files or update timestamps
+
+cp — Copy Files and Directories...Copies one or more files or directories to another location.
+Syntax: cp [options] source destination
+NOTE: using cp to a directory, should be cp t.txt directory/ #tells Linux, this is a directory, if it's missing, it returns an error
+#without /, if the directory doesn't exist, it copies & creates a new file in the current directory. or it occupies another file with the same name
+
+Flag         	Description
+-r, -R	   Copy directories recursively #with links, it copies destination instead of the actual link as a link.
+-i       	Prompt before overwriting files #are 
+-f      	 Force overwrite without prompting
+-u      	 Copy only if the source is newer than the destination
+-v	       Verbose mode (show files being copied)
+-p      	 Preserve permissions, ownership, and timestamps
+-a       	Archive mode (preserves nearly everything; recursive) #this is a combo of -a and -p, it also copies links as links, requires sudo to cp files of others
+-n       	Do not overwrite existing files
+
+mv — Move or Rename Files...Moves files/directories or renames them.
+Syntax: mv [options] source destination eg. mv -v *.txt Documents/ - moves all .txt files 
+Flag      	Description
+-i	      Ask before overwriting
+-f	      Force overwrite
+-n	      Never overwrite existing files
+-u      	Move only if the source is newer
+-v      	Show what is being moved
+
+rm — Remove Files....Deletes files and directories.
+Warning: Deleted files generally cannot be recovered using rm.
+Syntax: rm [options] file
+flag	            Description
+-r, -R    	Remove directories recursively
+-f        	Force deletion without prompts
+-i        	Prompt before each removal
+-I        	Prompt once before removing many files or recursively
+-v	        Show each file removed
+-d        	Remove an empty directory
+
+mkdir — Make Directories....Creates one or more directories.
+Syntax: mkdir [options] directory
+NOTE: mkdir Docs Images Videos # makes multiple directories ... 
+Flag           	Description
+-p         	Create parent directories as needed #mkdir -p Projects/Python/Week1 # creates nested directories
+-v         	Show each directory created
+-m MODE    	Set permissions when creating the directory #mkdir -m 755 website
+
+rmdir — Remove Empty Directories....Deletes directories only if they are empty.
+Syntax: rmdir [options] directory
+Flag                                     	Description
+-p                             	Remove parent directories if they become empty #useful for nested directories
+-v	                             Display each directory removed
+--ignore-fail-on-non-empty	     Ignore errors if a directory isn't empty (GNU implementation)
+
+touch — Create Files or Update Timestamps....Creates an empty file if it doesn't exist, or updates the file's timestamps if it does.
+Syntax: touch [options] file
+Flag    	Description
+-a   	Update only the access time
+-m   	Update only the modification time
+-c	   Don't create the file if it doesn't exist
+-t    TIME	Set a specific timestamp #touch -t 202607051230 report.txt (Format: [[CC]YY]MMDDhhmm[.ss]) [] denotes optional field, ie., century, year, seconds
+-r    FILE	Copy timestamps from another file #touch -r original.txt copy.txt
+
+NOTE: the difference between touch, echo, and cat: creating (touch), writing (echo), and reading (cat).
+NOTE: Every file on Linux/Unix has three different timestamps (clocks) attached to it:
+- Access time (atime) – The last time the file was read (opened, viewed, or accessed).
+- Modify time (mtime) – The last time the contents of the file were changed (written to).
+- Change time (ctime) – The last time the file's metadata (permissions, ownership, or filename) was changed. 
+       ..(Note: You cannot manually set ctime with touch; the system updates it automatically.)
+
+less -  Pager like vim/nano to read the contents of a large text file one screenful (one page) at a time, instead of dumping everything onto your terminal at once.
+Flag          	What it does                         	                Example
+-N          	Show line numbers	                                    less -N /var/log/syslog
+-i    	    Case-insensitive search                                	less -i logfile.log then search /error
+-s   	    Squeeze multiple blank lines into one	                   less -s bigfile.txt
+-S	    Chop long lines (no wrapping); side-scroll with arrows	     less -S widefile.log
+-m    	More detailed prompt (file position, %)                    	less -m file.txt
+-x3	    Set tab width to 3 spaces (good for code)                	 less -x3 source.c
+-X	    Leave file contents on screen after exiting	                less -X file.txt
+-F	    Exit automatically if file fits on one screen              	less -F short.conf
++F	    Follow mode (like tail -f, but navigable)                  	less +F /var/log/nginx/access.log
++G    	Start at the end of the file                               	less +G /var/log/syslog
++100    	Start at line 100	                                        less +100 bigfile.txt
+-p     PATTERN	Start at first match of PATTERN                    	less -p "ERROR" app.log
+
+for navigation in less: 
+Key                     	What it does
+Spacebar or f	    Move forward (down) one full page.
+b	                Move backward (up) one full page.
+Enter	            Move forward one single line at a time (down).
+y                	Move backward one single line at a time (up).
+g                	Go to the very top of the file.
+G (Shift + g)	    Go to the very bottom of the file.
+/ + searchterm	   Search forward for a word. (Press n to go to the next match, N for the previous).
+? + searchterm   	Search backward for a word.
+q	                Quit and exit less (return to your normal terminal prompt).
+Pro-Tips for less
+- Read while following (tail -f style): If you press Shift + F while inside less, it will enter "follow mode"—it will keep showing you new lines 
+as they are added to the file (just like tail -f). Press Ctrl + C to stop following and go back to normal navigation.
+
+- View multiple files: You can pass multiple files to less: less file1.txt file2.txt
+Type :n to go to the next file, and :p to go to the previous file.
+
+- Show line numbers: Start less with the -N flag to display line numbers on the left side:
+less -N myscript.py
+
+NOTE: There is a more command but, less is better than more
+
+-head & tail
+head shows you the top (beginning) of a file.
+tail shows you the bottom (end) of a file.
+
+syntax: head [options] filename
+Flag	            Description                                                                          	Example
+-n N	         Print the first N lines.	                                                      head -n 20 file.txt (shows first 20 lines)
+-c N	         Print the first N bytes (characters) of the file.	                             head -c 100 file.txt (shows first 100 characters)
+-q	           Quiet mode. When viewing multiple files, suppress the filename headers.       	head -q file1.txt file2.txt
+-v           	Always show the filename header (useful when viewing multiple files).         	head -v *.txt
+
+syntax: tail [options] filename
+Flag	                Description                                                                                                   	Example
+-n N	           Print the last N lines.                                                                             	tail -n 50 file.txt (shows last 50 lines)
+-c N           	Print the last N bytes of the file.                                                                	tail -c 1000 file.txt (last 1000 characters)
+-f             	Follow the file. This is the superstar flag! It prints the last 10 lines and then keeps watching the file.    	tail -f logfile.log
+                 As new lines are added, they stream live to your terminal.
+-F	             Follow with retry. Same as -f, but if the file is deleted or renamed (common in log rotation),                 tail -F /var/log/syslog
+                 tail -F will keep trying to reopen it.	
+-n +N	          Start printing from line N to the end of the file. (Notice the + sign).	                           tail -n +100 file.txt (prints from line 100 to the end)
+--pid=PID	       Used with -f. Automatically stop following the file when the process with the given PID (Process ID) dies.	    tail -f file.log --pid=1234
+
+
+ln
+in Linux/Unix, there are two completely different types of links: Hard Links and Symbolic (Soft) Links.
+Understanding the difference is crucial because they behave very differently when you delete, move, or edit the original file.
+- A Hard Link is an exact mirror (an extra name for the exact same data on the hard drive).
+- A Symbolic Link is a pointer (a shortcut that points to the original filename).
+
+Hard Links (The "Twin"）
+A hard link creates a second directory entry that points directly to the same physical data (inodes) on your hard drive.
+ln hard link is different from cp on ln; it consumes little extra space, editing either file changes the other, and cp is independent after creation.
+ syntax: ln original.txt hardlink.txt
+The Rules of Hard Links:
+- They share the same data: If you change original.txt, hardlink.txt changes too (and vice versa).
+- They are equal: There is no "original" vs "link". Both are just names for the same file.
+- Deleting doesn't hurt: If you delete original.txt, hardlink.txt still contains all the data. 
+  The data only gets deleted from the hard drive when ALL hard links to it are deleted.
+- Limitations: You cannot create a hard link for a directory (to avoid infinite loops). 
+  You cannot create a hard link across different hard drives or partitions (because each drive has its own inode table).
+
+Symbolic (Soft) Links (The "Shortcut")
+A symbolic link is a special file that stores the path to the original file. It is exactly like a shortcut in Windows or an alias on Mac.
+Syntax: ln -s original.txt softlink.txt # (note the -s flag):
+The Rules of Symbolic Links:
+- They are separate files: The link has its own inode and just holds the text of the file path (e.g., "/home/user/original.txt"). It takes almost zero disk space.
+- They break easily: If you delete, rename, or move original.txt, the symbolic link breaks and becomes a "dangling link" 
+    (it will flash red in ls and give a "No such file or directory" error).
+- They are flexible: You can create symbolic links across different hard drives, partitions, and even to directories.
+
+
+
