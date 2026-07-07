@@ -1,30 +1,29 @@
 ###Special / built-in variables
-$0   # name of the script itself
+$0   # name of the script itself = bash command
 --------
 $1 $2 $3  # positional args passed to script or function
-echo "My name is $1" #this in a .sh file
+hello.sh file 
+............
+#!/usr/bin/env bash #<- best practice shebang script, #!/bin/bash can only work where there is bash
+echo "My name is $1" 
 echo "I am $2 years old"
 echo "I live in $3" 
-bash hello.sh Fawaz 15 Dubai # => My name is Fawaz - I am 15 years old - I live in Dubai
+...........
+bash hello.sh Fawaz 15 Dubai #this code outputs: My name is Fawaz - I am 15 years old - I live in Dubai
 -------
+.......
 #!/bin/bash
-cp $1 $2 #into a file copy.sh
-after - bash copy.sh oldfile.txt newfile.txt # It copies oldfile.txt (which is $1) to newfile.txt (which is $2)
+cp $1 $2
+......
+bash copy.sh oldfile.txt newfile.txt # It copies oldfile.txt (which is $1) to newfile.txt (which is $2)
 
 $@   # all arguments as separate words
 --------
-#!/bin/bash
-echo "Hello to: $@"
+#!/bin/bash 
+echo "Hello to: $@" #it prints individual args in their own sentence, it outputs n number of sentence
+echo "Hello to: $*" #groups all args together, it outputs 1 sentence
+echo " there are # names" #counts the number args, it outputs the count
 -----
-bash greet.sh Alice Bob Charlie #Hello to: Alice Bob Charlie
----
-$*   # all arguments as one string #echo "Hello to: $*" then bash greet.sh Alice Bob Charlie
-..........
-$#   # number of arguments
------
-#!/bin/bash
-echo "You gave me $# things"
---------
 bash count.sh apple banana cake juice #output =>You gave me 4 things
 ............
 $?   # exit code of last command (0 = success)
@@ -32,11 +31,11 @@ $$   # PID of the current script Process ID
 $!   # PID of last background process
 
 Variable       Meaning
-$@        All arguments separately     Give each toy one by one
-$*       All arguments as one string   Put all toys in one bag
-$#       How many arguments            Count of toys you received
-$?       Success/fail of last command  Did it work? (0 = yes)
-$$       Current script's Process      ID My own student number 
+$@        All arguments separately    
+$*       All arguments as one string 
+$#       How many arguments            
+$?       Success/fail of last command  # Did it work? (0 = yes)
+$$       Current script's Process     
 $!       Last background process ID
 
 
@@ -44,7 +43,7 @@ Declaring & using variables
 NAME="Alice"             # no spaces around =
 AGE=30
 GREETING="Hello, $NAME"  # double quotes expand variables
-LITERAL='Cost: $5'     # echo $'literal' will give literal, but $literal  
+LITERAL='Cost: $5'     # echo $'literal' will print literal, but $literal  
 echo "$NAME is $AGE"    # Alice is 30
 echo "${NAME}s party"  # curly braces isolate the var name
 
