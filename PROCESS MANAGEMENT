@@ -1,0 +1,37 @@
+PROCESS- A process is a running instance of a program. It has its own process ID (PID), uses system resources like CPU and memory,
+  and can create child processes when it starts other programs.
+
+PS (Process Status)
+Basic Syntax: ps [options]
+Flag	             Description
+-e or -A	   Show all processes
+-f	         Full-format listing
+-l	         Long format
+-u [user] 	Show processes for specific user #ps -u john -o pid,ppid,cmd,time
+-p [PID]	  Show specific process by PID
+-o	        Custom output format # -o in ps means format output: it lets you choose exactly which columns to display instead of using the default process listing
+--sort	    Sort by specific column
+-C [cmd]	  Select by command name
+aux	       BSD-style: all processes, all users, with extra info
+
+regex example:
+ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem #custom format: PID, Parent PID, Command, Memory%, CPU%, sorted by memory descending #--sort=[option]
+ps -C nginx -o pid,user,cmd,%cpu,%mem #Shows all nginx processes with their resource usage
+  # -C nginx: filter to processes whose command name is nginx.
+. #-o pid,user,cmd,%cpu,%mem tells ps to print only those fields, in that order
+watch 'ps -C postgres -o pid,user,time,%cpu,%mem --no-headers' #monitoring specific service
+
+WATCH runs a command repeatedly at a fixed interval and refreshes the terminal display so you can see changes over time.
+By default, watch reruns the command every 2 seconds and keeps going until you stop it with Ctrl+C.
+It is useful for monitoring disk usage, process counts, log files, and service status without having to type the same command repeatedly.
+Basic syntax: watch [options] command
+FLAGS
+-n seconds: changes the refresh interval from the default 2 seconds.
+-d: highlights changes between updates.
+-t: hides the header line with the time and command.
+-g: exits when the output changes.
+
+Practical examples
+watch df -h: keeps an eye on disk space.
+watch free -m: monitors memory usage.
+watch "ps aux | grep nginx": repeatedly checks for nginx-related processes. Quoting is important when using pipes or multiple shell operators
