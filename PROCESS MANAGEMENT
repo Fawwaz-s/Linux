@@ -1,3 +1,5 @@
+PS,TOP,HTOP
+KILL, KILLALL, PKILL
 PROCESS- A process is a running instance of a program. It has its own process ID (PID), uses system resources like CPU and memory,
   and can create child processes when it starts other programs.
 
@@ -138,3 +140,104 @@ Use htop when:
 - Need to kill/reprioritize processes interactively
 - Working on development/debugging
 - Have it installed (not always default)
+
+KILL -kill sends a signal to a process (usually to terminate it), targeting it by PID.
+
+Signal Number    	Signal Name          	Description
+1	                 SIGHUP       	Hangup - often used to reload configs
+2	                 SIGINT	        Interrupt - same as Ctrl+C
+9	                 SIGKILL	      Kill - forceful, immediate termination (can't be caught/ignored)
+15               	 SIGTERM	      Terminate - graceful shutdown (default)
+18	               SIGCONT	      Continue - resume stopped process
+19	               SIGSTOP	      Stop - pause process (can't be caught/ignored)
+20	               SIGTSTP	      Terminal stop - same as Ctrl+Z
+Common Flags:
+Flag          	Description
+-l	          List all signal names #kill -KILL 1234
+-s [signal] 	Specify signal by name  #kill -TERM 1234  #kill -KILL 1234 #kill -HUP 1234 #kill -s USR1 1234
+-[number]    	Specify signal by number
+-n [signal]  	Specify signal number #kill -15 1234
+--	          Indicates end of options (use with negative PIDs)
+
+KILLALL - killall sends a signal to processes by name instead of PID — kills all matching processes at once.
+Basic Syntax: killall [options] <process_name> 
+# killall firefox        # sends SIGTERM to all processes named "firefox"
+# killall -9 firefox      # uses the same signal and names with KILL
+Flag	Description
+-s [signal]	Signal to send (default SIGTERM)
+-q	Quiet mode (no error messages)
+-i	Interactive - confirm before killing #killall -i python3 # Will ask: "Kill python3(1234)? (y/N)" for each process
+-v	Verbose - report what was done
+-w	Wait for processes to die # killall -w mysqld # Waits until mysqld actually exits
+-l	List all signal names
+-u [user]	Kill only processes owned by specific user # killall -u john chrome # Kills only John's Chrome processes
+-g	Kill process group instead of process
+-r	Interpret process name as regex # killall -r ".*python.*" # Kills all processes with "python" in their name
+-o [time]	Kill only processes older than
+-y [time]	Kill only processes younger than
+-I	Ignore case in process name
+
+3. PKILL Command - kills processes by matching a pattern against the process name or command line — more flexible than killall.
+Key difference from killall: pkill does partial/regex matching by default, so pkill fire would also match firefox.
+NOTE: Be careful — a loose pattern can kill more than you intend.
+Basic Syntax: pkill [options] <pattern>
+Flag          	Description
+-f          	Match full command line (not just name)
+-x    	      Match exact process name
+-u [user]   	Match processes owned by user #pkill -u john chrome # Kills John's Chrome processes
+-U [user]	    Match processes by real user ID
+-g [PGID]	    Match processes in process group
+-P [PPID]	    Match child processes of parent PID #pkill -P 1234 # Kills all children of process 1234
+-t [terminal]	Match processes by terminal
+-l	          List process name along with PID #pkill -l firefox # Shows: "1234 firefox"
+-n	          Only newest process
+-o	          Only oldest process #pkill -o python3 # Kills the oldest Python process
+-f          	Match against full command line #pkill -f "python3 /home/user/script.py" # Kills only the specific script, not all Python processes
+-signal	      Signal to send
+-c	          Count matching processes #pkill -c chrome # Returns number of Chrome processes (without killing)
+-v	          Invert match
+ 
+Signal Options:
+Flag	          Description
+-signal	      Send signal (e.g., -9, -TERM)
+--signal      signal	Alternative syntax
+-e	          Echo killed PIDs
+
+COMPARISON TABLE:
+Feature             	    KILL	              KILLALL       	PKILL
+Target	Specific          PID	             Process name	      Pattern/Regex
+Multiple Processes	No (one at a time)  	Yes (all matching)	Yes (all matching)
+Pattern Matching        	No	             Yes (limited)	    Yes (regex, full cmd)
+User Filtering	          No	              Yes (-u)	        Yes (-u, -U)
+Age Filtering           	No	              Yes (-o, -y)	    Yes (-o, -n)
+Interactive Mode	        No              	Yes (-i)         	No
+Wait for Exit	            No	              Yes (-w)        	No
+Kill by Parent	    Via process group	       No	              Yes (-P)
+Terminal Filter         	No	               No             	Yes (-t)
+Signal Default	       SIGTERM (15)	      SIGTERM (15)    	SIGTERM (15)
+Common Use	          Single process    	All instances	   Pattern-based
+Safety	              Must know PID     	Can be dangerous	Most dangerous
+
+
+PROCESS SELECTION FLOWCHART:
+text
+Need to terminate a process?
+│
+├── Do you know the exact PID?
+│   └── YES → Use KILL
+│       ├── Normal shutdown → kill <PID>
+│       ├── Force kill → kill -9 <PID>
+│       └── Reload config → kill -HUP <PID>
+│
+├── Do you know the exact process name?
+│   └── YES → Use KILLALL
+│       ├── All instances → killall firefox
+│       ├── Interactive → killall -i firefox
+│       └── User-specific → killall -u john firefox
+│
+└── Do you need pattern matching or complex criteria?
+    └── YES → Use PKILL
+        ├── Full command → pkill -f "python.*main.py"
+        ├── By user → pkill -u guest
+        ├── Parent child → pkill -P 1234
+        └── Terminal → pkill -t pts/2
