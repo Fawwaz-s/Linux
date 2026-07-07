@@ -235,5 +235,20 @@ The Rules of Symbolic Links:
     (it will flash red in ls and give a "No such file or directory" error).
 - They are flexible: You can create symbolic links across different hard drives, partitions, and even to directories.
 
+NOTE:
+If you do ln -s folder1 folder2, you are creating a symbolic link.
+BUT—if you accidentally do ln -s /home/user/myfile.txt mylink and then try to edit mylink with a text editor,
+you are actually editing the original file. However, if you do rm mylink, you are only deleting the link, not the original.
 
+The golden rule:
+rm on a symlink = removes just the pointer (safe).
+rm on a hard link = removes just that name (safe, data remains).
+rm on the last remaining hard link = permanently deletes the data from the disk.
 
+Goal	Command
+ln -s /path/to/original /path/to/link #Create a symbolic link to a file	
+ln -s /path/to/folder /path/to/link #Create a symbolic link to a folder	
+ln /path/to/original /path/to/link #Create a hard link
+ln -sf new_target old_link #Add the -f (force) flag: ln -sf new_target old_link
+
+Check what a link points to	ls -l (it will show link -> target) or readlink link_name
