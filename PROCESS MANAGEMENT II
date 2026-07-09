@@ -1,0 +1,51 @@
+Nice & Renice - The nice and renice commands are used to control process scheduling priority in Unix/Linux systems. 
+They determine how much CPU time a process receives relative to other processes.
+  - Key idea: A lower nice value means higher priority, while a higher nice value means lower priority.
+  Typical nice values range from -20 (highest priority) to 0 (Default priority) to  19 (lowest priority).
+  - Note: Decreasing the nice value (giving a process higher priority) usually requires root or appropriate privileges. 
+  Regular users can typically only increase the nice value (lower a process's priority).
+
+nice — Start a Process with a Specific Priority....Launches a new process with a specified scheduling priority.
+Syntax: nice [OPTION] [COMMAND [ARG]...] 
+nice -n NICE_VALUE command 
+Flag              	            Description
+-n VALUE	              Set the nice adjustment (or absolute value, depending on implementation)
+--adjustment=VALUE    	Long form of -n
+--help	                Display help information
+--version	              Display version information
+
+Note: On GNU/Linux, if nice  -n value is not specified, nice -n VALUE command adjusts the process's nice value by VALUE relative to the current value. 
+Since most shells start with a nice value of 0, nice -n 10 typically results in a nice value of 10.
+USECASE EXAMPLES:
+*nice -n 10 python analysis.py # Start a program with lower priority, The Python script runs with a lower CPU priority, making it less likely to impact interactive tasks.
+*nice -n 15 tar -czf backup.tar.gz Projects/ #Compress a large directory without slowing your computer, The compression runs in the background with reduced priority.
+
+renice — Change the Priority of a Running Process...Unlike nice, renice modifies the priority of an already running process.
+Syntax: renice priority [options] identifier #The identifier can be: a Process ID (PID), a user, a process group.
+Flag	             Description
+-n VALUE	    Specify the new nice value (on many systems, the first positional argument is more commonly used)
+-p	          Target one or more process IDs  #renice 19 -p 4128 - reduces CPU process priority of this process
+-u	          Target all processes owned by a user #sudo renice -7 -u alice #increase CPU scheduling priorities of all processes owned by alice.
+-g	          Target a process group #renice 5 -g 1001 #Updates every process in process group 1001.
+--help	      Show help
+--version	    Show version
+Note: increasing priorities requires, ps aux | grep -w "firefox", top, htop - to get PID, user or PG before running renice.
+
+jobs, bg, fg, nohup, & (background execution)
+These commands are part of job control in Bash. They let you start, pause, resume, and manage processes running in the foreground or background of your current shell.
+Key Concepts
+Foreground process: Occupies the terminal until it finishes (e.g., vim, nano, python script.py).
+Background process: Runs without taking over the terminal, allowing you to continue entering commands.
+Job: A process or pipeline managed by the current shell. Jobs are numbered (e.g., [1], [2]) and are different from process IDs (PIDs).
+
+jobs — List Background and Suspended Jobs....Displays the jobs currently managed by the current shell session.
+Syntax: jobs [options] [job_spec]
+Symbols:
++ = current/default job (most recently foregrounded or backgrounded)
+- = previous job (second most recent)
+Flag	          Description
+-l  	Show the job number and the process ID (PID)
+-p	  Display only the PIDs of jobs
+-r	  Show only running jobs
+-s	  Show only stopped (suspended) jobs
+-n	  Show only jobs whose status has changed since the last notification
