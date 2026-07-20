@@ -38,14 +38,120 @@ Foreground process: Occupies the terminal until it finishes (e.g., vim, nano, py
 Background process: Runs without taking over the terminal, allowing you to continue entering commands.
 Job: A process or pipeline managed by the current shell. Jobs are numbered (e.g., [1], [2]) and are different from process IDs (PIDs).
 
+& (Background Execution), Purpose: Runs a command in the background, freeing up your terminal.
+Syntax: command &
+How it works: Launches process as a background job, Returns job ID in brackets [1] and process ID (PID)
+Process continues running even if terminal is closed? NO - it dies with the shell unless combined with nohup or disown
+python train_model.py & # Long-running data processing
+node server.js & # Web server startup
+tar -czf backup.tar.gz /var/www/html &  # Large file compression
+-- all these commands can be ran at the same time in the foreground and background
+
 jobs — List Background and Suspended Jobs....Displays the jobs currently managed by the current shell session.
-Syntax: jobs [options] [job_spec]
+Purpose: Lists all current background/suspended jobs in the current shell session.
+Syntax: jobs [options] [job_spec]  - Output format: [job_number] status command
+" [1]  - 12345 Running    python long_script.py &
+  [2]  + 12346 Suspended  vim config.conf "
 Symbols:
 + = current/default job (most recently foregrounded or backgrounded)
 - = previous job (second most recent)
+
+Status values:
+Running - Actively executing
+Stopped - Suspended (Ctrl+Z) #Ctrl Z stops or pauses a command, Ctrl C cancels or kills it 
+Done - Completed
+Terminated - Killed or failed
+
 Flag	          Description
--l  	Show the job number and the process ID (PID)
+-l  	Show the job number and the process ID (PID) 
 -p	  Display only the PIDs of jobs
 -r	  Show only running jobs
 -s	  Show only stopped (suspended) jobs
 -n	  Show only jobs whose status has changed since the last notification
+
+bg (Background) - Bring a Job to the Foreground...Moves a background or stopped job back to the foreground.
+Purpose: Resumes a suspended job and runs it in the background.
+Syntax: bg [%job_number]
+How it works:
+- Takes a stopped job (from Ctrl+Z) and continues execution in the background
+- If no job specified, resumes the most recently suspended job (marked with +)
+- The job continues running even while you execute other commands
+example:
+scp bigfile.tar.gz user@server:/backup/  # Start a big file transfer, pause it, then background it
+# Press Ctrl+Z to suspend or pause it - Output:
+[1]+  Stopped  scp bigfile.tar.gz user@server:/backup/
+bg %1  # Resume in background
+[1]+  scp bigfile.tar.gz user@server:/backup/ &
+bg # Background the most recent stopped job
+NOTE: The job must be stopped first (via Ctrl+Z) before you can use bg.
+
+ fg (Foreground)
+Purpose: Brings a background job to the foreground, making it interactive again.
+Syntax: fg [%job_number]
+How it works:
+- Moves job from background/stopped state to the foreground
+- Terminal becomes blocked until job completes or is suspended
+- If no job specified, brings the most recent job to foreground (marked with +)
+example:
+python interactive_tool.py & # You backgrounded a script and need to see its interactive output
+[1] 12347 #output
+fg %1  # Bring it back to foreground
+fg # Bring the most recent job to foreground
+
+# Edit a config while a download runs in background, then bring it back
+vim /etc/config.conf &  # Background edit
+fg  # Bring it back when ready to continue
+Pro tip: Use fg with job numbers obtained from jobs command.
+
+nohup (No Hang Up)
+Purpose: Runs a command immune to hangups, continuing even after shell exits.
+Syntax: nohup command [arguments] 
+nohup python server.py #Run a command
+nohup python server.py & #Run in the background
+Key behavior:
+- Ignores the SIGHUP (hangup) signal
+- If stdout is a terminal, redirects output to nohup.out (or $HOME/nohup.out)
+- If stderr is a terminal, redirects to nohup.out as well #means standard error. It is the output stream a command uses to send error messages and warnings, 
+                                                                      separate from normal output.
+
+Reference Table
+Command	          Action
+command&      Start in background
+fg %n	        Bring job n to foreground
+bg %n       	Resume job n in background
+kill %n	      Send SIGTERM to job n
+disown %n	    Remove job from shell's job table (prevents SIGHUP on exit)
+Ctrl+Z	      Suspend current foreground job
+Ctrl+C	      Terminate current foreground job
+
+SCREEN &TMUX are terminal multiplexers. They are powerful tools that allow you to run and manage multiple terminal sessions from a single window.
+This means you can start a long-running task on a remote server, safely disconnect, and come back later to reattach, leaving the task running in the background.
+Unlike using & or nohup, they offer a complete, interactive workspace that persists.
+
+Key Concepts: Sessions, Windows, and Panes
+Both tools are built on similar core concepts but use different terminology:
+Sessions: An independent workspace that contains all your windows and panes. You can detach from a session and reattach later.
+Windows: Think of these like tabs within a session. Each window is a separate terminal shell.
+Panes: (Primarily a tmux feature, but available in newer screen) A way to split a single window into multiple sections, each with its own shell.
+
+Feature                       	screen Command / Keybind	                   tmux Command / Keybind
+Start a new (named) session   	screen -S session_name	                   tmux new -s session_name
+List active sessions	               screen -ls	                                     tmux ls
+Detach from session               	Ctrl+a then d	                                Ctrl+b then d
+Reattach to a session	          screen -r session_name                  	tmux attach -t session_name
+Kill a session	              screen -X -S session_name quit	            tmux kill-session -t session_name
+Create new window                 	Ctrl+a then c	                                Ctrl+b then c
+Split window vertically	             Ctrl+a then |                               	Ctrl+b then %
+Split window horizontally         	Ctrl+a then S                                	Ctrl+b then "
+Switch between windows	    Ctrl+a then n (next) or p (previous)	       Ctrl+b then n (next) or p (previous)
+moving between panes                                                             Ctrl-b arrow keys
+
+The most important commands to start with are creating a named session, detaching, and reattaching.
+
+screen vs tmux: A Quick Comparison
+While they solve the same problem, tmux is generally considered the more modern and feature-rich tool.
+tmux: Offers more advanced features like a more flexible pane system, a highly customizable and scriptable interface, 
+ and a modern client-server model. The default keybindings (Ctrl+b) are often found more intuitive by new users.
+screen: The older, more traditional tool. It is almost universally installed by default on older systems, 
+making it a reliable fallback. Its configuration is simpler, but it's less flexible than tmux.
+
