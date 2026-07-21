@@ -239,39 +239,29 @@ journalctl -g "502 Bad Gateway" -u nginx
 Essential Options/Flags
  Flag                Description        Example 
 -n, --lines     Show last N lines       journalctl -n 50
--o`, --output   Change output format    journalctl -o json
+-o, --output   Change output format    journalctl -o json
 --no-pager      Disable pagination      journalctl --no-pager
 -q, --quiet     Suppress warnings       journalctl -q -u nginx
 -r, --reverse   Newest first (default)  journalctl -r
 -a, --all       Don't truncate fields   journalctl -a
 
 Output Formats (`-o` option)
-# Default human-readable
-journalctl -o short
-
-# Verbose with all fields
-journalctl -o verbose
-
+journalctl -o short # Default human-readable
+journalctl -o verbose # Verbose with all fields
 # JSON formats (for automation)
 journalctl -o json           # Each entry as JSON object
 journalctl -o json-pretty    # Formatted JSON
 journalctl -o json-sse       # Server-Sent Events format
-
 # Export format for backup/restore
 journalctl -o export         # Binary-safe format
-
 # No timestamp, just messages
 journalctl -o cat            # Only message field
-
 # With human-readable timestamps
 journalctl -o short-full     # Full timestamp format
 journalctl -o short-iso      # ISO-8601 timestamp
-```
 
-### Disk Management
-
+Disk Management
 | Flag | Description |
-|------|-------------|
 | `--disk-usage` | Show journal disk usage |
 | `--vacuum-size=100M` | Reduce to specified size |
 | `--vacuum-time=30d` | Remove logs older than 30 days |
