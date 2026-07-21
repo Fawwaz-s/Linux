@@ -182,92 +182,70 @@ journalctl -u nginx -u mysql  # Multiple services combined
 journalctl -f                 # Follow all logs
 journalctl -u nginx -f        # Follow nginx logs only
 
-
-### 4. **Filter by Time**
-```bash
+-- Filter by Time
 journalctl --since "2026-07-20 10:00:00"           # Since specific date/time
 journalctl --until "2026-07-20 12:00:00"           # Until specific date/time
 journalctl --since "1 hour ago"                    # Relative time
 journalctl --since "2026-07-20" --until "2026-07-21"
 journalctl --since "10 minutes ago" -u nginx
-```
 
-**Time formats accepted:**
-- `"2026-07-20 10:30:45"` - Full date/time
-- `"2026-07-20"` - Entire day
-- `"10:30:00"` - Today at that time
-- `"1 hour ago"` - Human-friendly
-- `"yesterday"`, `"today"`, `"tomorrow"`
+        Time formats accepted:
+  - "2026-07-20 10:30:45" - Full date/time
+  - "2026-07-20" - Entire day
+  - "10:30:00" - Today at that time
+  - "1 hour ago" - Human-friendly
+  - "yesterday", "today", "tomorrow"
 
-### 5. **Filter by Boot**
-```bash
+-- Filter by Boot
 journalctl -b                  # Current boot logs
 journalctl -b -1               # Previous boot logs
 journalctl -b -2               # Boot before that
 journalctl --list-boots        # List all boots with IDs
 journalctl -b 7a8b9c...        # Specific boot ID
-```
 
-### 6. **Filter by Priority/Level**
-```bash
+--Filter by Priority/Level
 journalctl -p err              # Errors and above (emerg, alert, crit, err)
 journalctl -p warning          # Warning and above
 journalctl -p 3                # Numeric priority (0=emerg, 7=debug)
-```
 
-**Priority Levels:**
-| Code | Name | Description |
-|------|------|-------------|
-| 0 | emerg | System is unusable |
-| 1 | alert | Action must be taken immediately |
-| 2 | crit | Critical conditions |
-| 3 | err | Error conditions |
-| 4 | warning | Warning conditions |
-| 5 | notice | Normal but significant |
-| 6 | info | Informational |
-| 7 | debug | Debug-level messages |
+Priority Levels:
+ Code   Name       Description 
+ 0     emerg     System is unusable 
+ 1     alert     Action must be taken immediately 
+ 2     crit      Critical conditions 
+ 3     err       Error conditions 
+ 4    warning    Warning conditions 
+ 5    notice    Normal but significant 
+ 6    info      Informational 
+ 7   debug      Debug-level messages 
 
-### 7. **Filter by Facility**
-```bash
+--Filter by Facility
 journalctl -f SYSLOG_FACILITY=0    # Kernel messages
 journalctl -f SYSLOG_FACILITY=1    # User-level messages
 journalctl -f SYSLOG_FACILITY=4    # System daemons
-```
 
-### 8. **Filter by Process/Command**
-```bash
+--Filter by Process/Command
 journalctl _PID=1234               # Specific PID
 journalctl _COMM=nginx             # Process name
 journalctl _UID=1000               # User ID
 journalctl _GID=1000               # Group ID
 journalctl _EXE=/usr/bin/nginx     # Executable path
-```
 
-### 9. **Filter by Message Content**
-```bash
+--Filter by Message Content
 journalctl -g "error"              # Grep for "error" (case-insensitive)
 journalctl -g "ERROR.*failed"      # Regex pattern
 journalctl -g "502 Bad Gateway" -u nginx
-```
 
----
+Essential Options/Flags
+ Flag                Description        Example 
+-n, --lines     Show last N lines       journalctl -n 50
+-o`, --output   Change output format    journalctl -o json
+--no-pager      Disable pagination      journalctl --no-pager
+-q, --quiet     Suppress warnings       journalctl -q -u nginx
+-r, --reverse   Newest first (default)  journalctl -r
+-a, --all       Don't truncate fields   journalctl -a
 
-## Essential Options/Flags
-
-### Output Formatting
-
-| Flag | Description | Example |
-|------|-------------|---------|
-| `-n`, `--lines` | Show last N lines | `journalctl -n 50` |
-| `-o`, `--output` | Change output format | `journalctl -o json` |
-| `--no-pager` | Disable pagination | `journalctl --no-pager` |
-| `-q`, `--quiet` | Suppress warnings | `journalctl -q -u nginx` |
-| `-r`, `--reverse` | Newest first (default) | `journalctl -r` |
-| `-a`, `--all` | Don't truncate fields | `journalctl -a` |
-
-### Output Formats (`-o` option)
-
-```bash
+Output Formats (`-o` option)
 # Default human-readable
 journalctl -o short
 
