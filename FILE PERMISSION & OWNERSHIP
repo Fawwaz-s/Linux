@@ -1,0 +1,177 @@
+Root User (The Superuser) : Root is the superuser account in Linux/Unix systems with unrestricted access to all files, commands, and system resources. 
+It's the equivalent of an administrator account on Windows, but with even more power.
+User ID (UID): 0
+Every process runs with a UID
+UID 0 = root = unlimited privileges
+
+Root's Capabilities:
+Read/write/execute ANY file or directory
+Install/remove software system-wide
+Modify system configuration files
+Create/delete user accounts
+Change ownership of ANY file
+Modify kernel parameters
+Access hardware directly
+Bypass ALL permission checks
+
+# This would delete your entire system - NO warnings!
+rm -rf /           # Deletes everything from root directory
+rm -rf /*          # Same thing
+chmod -R 777 /     # Makes EVERYTHING world-writable - destroys security
+chown -R user:user / # Changes ownership of entire system
+dd if=/dev/zero of=/dev/sda # Overwrites your hard drive 
+
+Sudo (Superuser DO) : Sudo (Superuser DO) allows authorized users to execute commands with root privileges while maintaining accountability. 
+Instead of logging in as root, users run specific commands with elevated permissions.
+Key Features:
+Granular control - define exactly which commands users can run
+Accountability - logs EVERY sudo command
+Temporary elevation - privilege lasts for 5-15 minutes (configurable)
+Password required - prevents accidental execution
+No root password needed - users authenticate with their own password
+
+Sudo vs Root: Comparison
+Feature	            Root                              	Sudo
+Access	     Complete system access        	Command-specific privileges
+Password	  Root password (shared secret)    	User's own password
+Logging	          Minimal	                    Full audit trail (who, what, when)
+Risk Level     	Extremely high	                      Managed risk
+Accountability	Hard to track (multiple users)    Easy to audit (per-user logs)
+Best Practice 	Avoid using directly	          Default administrative method
+Safety	          No safeguards	            Commands are logged, can be restricted
+Context     	Everything runs as root	       Only specified commands run as root
+
+Sudo Configuration (/etc/sudoers)
+The Sudoers File:
+The sudoers file defines who can run what, where, and as whom.
+"NEVER edit this file directly - use visudo (validates syntax to prevent lockout)":
+sudo visudo
+# or
+sudo visudo -f /etc/sudoers.d/custom  # Use separate file
+-- Common Sudoers Entries:
+1. Basic - Give user full sudo access:
+
+bash
+username ALL=(ALL:ALL) ALL
+# user    hosts=(users:groups) commands
+# Means: username can run ALL commands as ALL users on ALL hosts
+2. Group-based permissions:
+
+bash
+# Add users to sudo group
+%sudo   ALL=(ALL:ALL) ALL
+%wheel  ALL=(ALL:ALL) ALL
+3. No password required:
+
+bash
+username ALL=(ALL) NOPASSWD: ALL
+# DANGEROUS! Use sparingly
+4. Command-specific restrictions:
+
+bash
+# Allow specific commands only
+username ALL=(ALL) /usr/bin/systemctl, /usr/bin/apt
+
+# Without shell access
+username ALL=(ALL) /usr/bin/systemctl restart *, !/usr/bin/systemctl stop *
+
+# With arguments
+username ALL=(ALL) /usr/bin/apt update, /usr/bin/apt upgrade -y
+
+# Run as specific user
+username ALL=(www-data) /usr/bin/systemctl restart nginx
+5. Complex example:
+
+bash
+# DevOps team can manage services but not stop critical ones
+%devops ALL=(ALL) /usr/bin/systemctl *, !/usr/bin/systemctl stop postgresql, !/usr/bin/systemctl stop mysql
+
+# No password for specific commands
+%devops ALL=(ALL) NOPASSWD: /usr/bin/apt update, /usr/bin/apt upgrade
+
+
+
+Command           	Changes         	Requires	                Common Use
+chmod          	Permissions	       File owner/root	    Make executable, restrict access
+chown	          Owner/Group        	Root or sudo 	      Transfer ownership
+chgrp         	Group only	       Owner/root         	Team collaboration
+umask         	Defaults	        User session	        Set defaults for new files
+
+chmod (Change File Mode Bits)
+Concept: Modifies read, write, and execute permissions for files/directories. 
+Linux uses three permission sets: Owner (user who created file), Group (users in file's group), Others (everyone else)
+ - Permission Types: r (read) = 4, w (write) = 2, x (execute) = 1
+Syntax: chmod [options] mode file
+works in two modes:
+ * Absolute Mode (Numeric): owner-group-others 
+chmod 755 script.sh #rwx-rx-rx
+chmod 644 config.conf #rw--r---r---
+ * Symbolic Mode: # u=owner, g=group, o=others, a=all
+chmod u+x script.sh         # Add execute for owner
+chmod g-w file.txt          # Remove write for group
+chmod o=r file.txt          # Set read-only for others
+chmod a+x script.sh         # Add execute for everyone # use to ./script.sh to execute
+Common Flags:
+-R (recursive): Apply to all files/dirs inside
+-v (verbose): Show what changed
+-c (changes): Report only when changes made
+--reference=FILE: Copy permissions from another file
+
+chown (Change File Owner/Group)
+Concept: Changes ownership of files/directories. Only root or users with appropriate sudo privileges can change ownership.
+Syntax: chown [options] owner[:group] file
+Common Flags:
+-R (recursive): Apply to directories recursively
+-v (verbose): Show changes
+--from=CURRENT: Only change if current owner matches
+NOTE: the : separates the owner from the group
+chown john file.txt           # Change owner to john
+chown :developers file.txt    # Change group only
+chown john:developers file.txt # Change both
+chown -R john:devs /project/  # Recursive change 
+chown --from=olduser newuser file.txt # Change ownership but preserve existing group
+
+chgrp (Change Group Ownership)
+Concept: Specifically changes the group ownership of files. Users can change group to any group they belong to.
+Syntax: chgrp [options] group file
+Common Flags:
+-R (recursive): Apply to directories recursively
+-v (verbose): Show changes
+-c (changes): Report only when changes made
+-h (no dereference): Change symlink itself, not target
+
+chgrp developers file.txt      # Change group only
+chgrp -R admins /project/      # Recursive group change
+chgrp -R developers /project/src/ # Grant group access to project files
+chgrp docker /var/run/docker.sock # Similar to chown but only group (no owner change)
+
+ umask (User File Creation Mask)
+Concept: Determines default permissions for newly created files/directories. It subtracts permissions from the base (666 for files, 777 for directories).
+How it works:
+umask value = permissions to remove
+Default file permissions = 666 - umask
+Default directory permissions = 777 - umask
+
+Common umask Values:
+022 → files: 644 (rw-r--r--), dirs: 755 (rwxr-xr-x) [Default]
+002 → files: 664 (rw-rw-r--), dirs: 775 (rwxrwxr-x) [Group-friendly]
+027 → files: 640 (rw-r-----), dirs: 750 (rwxr-x---) [Secure]
+077 → files: 600 (rw-------), dirs: 700 (rwx------) [Private]
+
+# In a shared development environment
+umask 002    # Ensures new files are group-writable
+touch shared.txt  # Creates with 664 permissions
+
+# Secure server configuration
+umask 027    # New files: rw-r-----, directories: rwxr-x---
+# Great for production where only owner & group should access
+
+# Sensitive data processing
+(umask 077; touch secret.dat)  # Temporary stricter umask
+
+# In Docker containers for security
+umask 0022   # Standard secure default
+
+# For web applications (less permissive)
+umask 022    # Files: 644, Directories: 755
+
