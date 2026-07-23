@@ -172,13 +172,14 @@ The Action Executor: -exec cmd {} \;
   {}: This is a placeholder. find automatically replaces {} with the name of the file it just discovered.
   \;: This marks the absolute end of the command you are running inside -exec. 
   The backslash is required to escape the semicolon so Bash doesn't get confused.
-   find /data -type f -name "*.png" -exec cp {} /backup/images/ \;  # Copy all found .png images into a central backup folder
+   * find /data -type f -name "*.png" -exec cp {} /backup/images/ \;  # Copy all found .png images into a central backup folder
    How -exec works:
     -exec : Tells find to run a command on each matched file.
     {} : Placeholder — replaced by the full path of each found file.
     cp : Copy command.
    /backup/images/ : Destination directory (must exist beforehand).
    \; : Ends the -exec command (required syntax).
+  * find . -type d -exec chmod 755 {} \;  # change permission of every directory
 The Nuclear Option: -delete
 An optimized, built-in action that instantly deletes every file that matches your search criteria.
 ⚠️ Warning: Never run a -delete command without running the search normally first to see what it hits!
