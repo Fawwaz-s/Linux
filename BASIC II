@@ -322,7 +322,7 @@ IP: 127.0.0.1
 ***
 User: alex
 IP: 192.168.1.1
-awk 'BEGIN {RS="***\n"} {print $2, $4}' eg.log #removes the seperator *** and merges fawaz and alex
+awk 'BEGIN {RS="***\n"} {print $2, $4}' eg.log #removes the seperator *** and merges fawaz and alex cos the user and IP lines is converted to 1 line
 
 ORS (Output Record Separator)
 Whenever you call the print command, awk automatically slaps ORS onto the very end of your output. 
