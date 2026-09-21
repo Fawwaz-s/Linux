@@ -305,7 +305,7 @@ How to set it: You can use the -F flag on the command line, or define it inside 
 awk -F ':' '{print $1}' /etc/passwd # 
 awk 'BEGIN {FS=":"} {print $1}' /etc/passwd # Doing the exact same thing inside a BEGIN block
 
-OFS (Output Field Separator)
+OFS (Output Field Separator) #replacer
 When you ask awk to print multiple columns separated by a comma (like print $1, $2), the comma is a placeholder. 
 awk replaces that comma with whatever character is stored in OFS. By default, OFS is a single space.
 *Used to convert a colon-separated file into a clean, comma-separated CSV file. 
@@ -324,7 +324,7 @@ User: alex
 IP: 192.168.1.1
 awk 'BEGIN {RS="***\n"} {print $2, $4}' eg.log #removes the seperator *** and merges fawaz and alex cos the user and IP lines is converted to 1 line
 
-ORS (Output Record Separator)
+ORS (Output Record Separator) #replacer
 Whenever you call the print command, awk automatically slaps ORS onto the very end of your output. 
 By default, ORS is a newline character (\n), which is why every single print command starts a fresh new line on your screen
 EXAMPLE: Ip.log
