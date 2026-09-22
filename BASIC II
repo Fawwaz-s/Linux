@@ -238,6 +238,7 @@ the delimiter you specified with -d, it prints the whole line unmodified. -s for
 and ignore lines that don't match your delimiter format.
  cut -d ':' -f 1 -s database.txt #prints fawaz from :# User Database Update /n fawaz:x:1000:1000 -ignores user database because there is no delimiter :
 .....................................................................
+
 AWK - It scans each line of input, tests it against patterns, and executes actions on matches. 
 Think of it as a programmable grep + cut + sort with arithmetic and variables built in.
 SYNTAX: awk [flags] 'pattern { action }' [file...]
