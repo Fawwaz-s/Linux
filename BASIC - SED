@@ -37,6 +37,7 @@ sed '$d' file.txt  # Deletes the last line
 sed '/pattern/!d' file.txt  # Keep only matching lines
 sed 's/^[[:space:]]*//' file.txt # removes leading blank spaces
 sed 's/[[:space:]]*$//' file.txt #removes trailing blank spaces
+sed 's/\t/    /g' file.txt # replaces spaces/tab
 
 Printing (with -n) # -n: Suppresses default printing. By default, sed prints every line of the file. -n tells sed to print nothing unless explicitly requested.
 sed -n '5p' file.txt              # Print only line 5
@@ -81,109 +82,26 @@ You can tell sed exactly which lines an operation should affect.
 - Pattern
  * sed '/ERROR/s/foo/bar/' logfile # Only lines containing ERROR are modified.
 - Range between patterns
-* sed '/BEGIN/,/END/d' file.txt # Deletes everything in between these two
+* sed '/BEGIN/,/END/d' file.txt # Deletes everything in between these two, This is extremely useful for configuration files and generated text.
 
-BEGIN
-...
-...
-END
+OTHER COMMANDS
+* sed 's/^\(.*\) \(.*\)$/\2, \1/' names.txt # turns Name Surname -> Name, Surname
+* sed -E 's/(\w+)@(\w+)\.com/\2.\1/' emails.txt # Using capture groups
+* sed 's/.*/\U&/' file.txt # Uppercase whole line
+* sed -E 's#([0-9]{2})/([0-9]{2})/([0-9]{4})#\3-\1-\2#' dates.txt # Reformat dates MM/DD/YYYY → YYYY-MM-DD
+* sed -nE 's/.*([0-9]{1,3}(\.[0-9]{1,3}){3}).*/\1/p' file.txt # Extract IP address
 
-This is extremely useful for configuration files and generated text.
-
-
-
-
-# Using capture groups
-sed -E 's/(\w+)@(\w+)\.com/\2.\1/' emails.txt
-
-# Uppercase whole line
-sed 's/.*/\U&/' file.txt
-REPLACEMENT SPECIAL CHARACTERS
-Token        	Meaning
-&	          The whole match
-\1…\9	      Capture groups
-\n	        Newline (GNU)
-\t	        Tab (GNU)
-\L…\E	      Lowercase until \E (GNU)
-\U…\E	      Uppercase until \E (GNU)
-\l / \u   	Lowercase/uppercase next char (GNU)
-
-GNU-Specific / Less Common
-Flag	Description
--l N	Set line-wrap length for l command
--u	Unbuffered output (POSIX)
---posix	Disable GNU extensions
---debug	Show how sed parses the script (GNU)
---follow-symlinks	Follow symlinks with -i
---sandbox	Disable e, r, w commands
-
-# Using capture groups
-sed -E 's/(\w+)@(\w+)\.com/\2.\1/' emails.txt
-
-# Uppercase whole line
-sed 's/.*/\U&/' file.txt
-
-# Using a script file
-echo 's/foo/bar/' > script.sed
-echo '/^#/d'   >> script.sed
-sed -f script.sed file.txt
-Advanced: Hold Space
-bash
-# Reverse file (like tac)
-sed -n '1!G;h;$p' file.txt
-
-# Join pairs of lines
-sed 'N;s/\n/ /' file.txt
-
-# Double-space a file
-sed 'G' file.txt
-
-# Print line numbers
-sed = file.txt | sed 'N;s/\n/\t/'
-Regex Power (with -E)
-bash
-# Remove HTML tags
-sed -E 's/<[^>]+>//g' page.html
-
-# Reformat dates MM/DD/YYYY → YYYY-MM-DD
-sed -E 's#([0-9]{2})/([0-9]{2})/([0-9]{4})#\3-\1-\2#' dates.txt
-
-# Extract IP address
-sed -nE 's/.*([0-9]{1,3}(\.[0-9]{1,3}){3}).*/\1/p' file.txt
-BRE vs ERE (Regex Modes)
-By default sed uses Basic Regular Expressions (BRE), where these must be escaped to be special: + ? | ( ) { }.
-
-With -E or -r, you get Extended Regular Expressions (ERE), where they are special without escaping.
-
-Feature	BRE (default)	ERE (-E)
-Group	\(...\)	(...)
-Alternation	|	| or |
-One or more	\+	+
-Zero or one	\?	?
-Interval	\{n,m\}	{n,m}
 Key Concepts to Remember
-Pattern space — the current line being processed.
+- Pattern space — the current line being processed.
+- Cycle — read line → execute commands → auto-print → next line.
+- -n + p is the classic idiom for "print only what I say."
+- -i is destructive; always test without it first or use a backup suffix.
+- Delimiters in s can be any character (s#a#b# is useful when / is in the pattern).
 
-Hold space — a secondary buffer for multi-line operations.
 
-Cycle — read line → execute commands → auto-print → next line.
 
--n + p is the classic idiom for "print only what I say."
 
--i is destructive; always test without it first or use a backup suffix.
 
-Delimiters in s can be any character (s#a#b# is useful when / is in the pattern).
 
-Quick Reference Cheat Sheet
-bash
-sed 's/old/new/'          # first per line
-sed 's/old/new/g'         # all per line
-sed -n '5p'               # print line 5
-sed '3d'                  # delete line 3
-sed -i.bak 's/x/y/g' f    # in-place + backup
-sed -E 's/(a|b)/X/g' f    # extended regex
-sed -n '/A/,/B/p' f       # range by regex
-sed 's/.*/\U&/' f         # uppercase
-sed '$a\end' f            # append at EOF
-That's the full sed toolkit — master the s command, addresses, and -n/-i/-E flags and you'll cover 95% of real-world usage.
+
 
