@@ -1,0 +1,91 @@
+pg_lsclusters is a PostgreSQL cluster management utility provided by the Debian/Ubuntu `postgresql-common` package.
+It lists all PostgreSQL clusters installed on the system along with their current status.
+Despite the name, it is not a systemctl-style command and not part of systemd — it's a Debian-specific wrapper around PostgreSQL's multi-cluster infrastructure.
+pg_lsclusters = "What PostgreSQL clusters exist on this box, and are they up?
+It's the Debian/Ubuntu equivalent of asking:
+- `systemctl list-units 'postgresql@*'`
+- plus a friendly, version-and-port-aware summary.
+
+What It Does
+It queries the local PostgreSQL cluster registry (stored under /etc/postgresql/) and reports the state of each cluster by checking whether the corresponding systemd service unit is running.
+
+Internally, it is a thin Perl script that:
+1. Reads `/etc/postgresql/<version>/<cluster>/` directories.
+2. Maps each cluster to its systemd unit (e.g., `postgresql@16-main.service`).
+3. Reports status in a tabular format.
+
+Typical Output
+Ver  Cluster  Port  Status  Owner    Data directory                Log file
+16   main     5432  online  postgres /var/lib/postgresql/16/main   /var/log/postgresql/postgresql-16-main.log
+15   main     5433  down    postgres /var/lib/postgresql/15/main   /var/log/postgresql/postgresql-15-main.log
+
+Column Breakdown
+Ver           PostgreSQL major version (e.g., `15`, `16`). 
+Cluster       Cluster name (usually `main`, but can be custom like `reporting`). 
+Port         TCP port the cluster listens on (5432 is default; additional clusters get `5433`, `5434`, etc.). |
+Status       online (running), down (stopped), or unknown. 
+Owner        OS user that owns the cluster (almost always postgres). 
+Data directory   Where the actual database files live. 
+Log file         Path to the cluster's log file. 
+
+ What Is a "Cluster" Here?
+A cluster in PostgreSQL terms is:
+- A data directory(the physical database files).
+- A configuration set (`postgresql.conf`, `pg_hba.conf`, etc.).
+- A server process listening on a specific port.
+
+Debian/Ubuntu's `postgresql-common` framework allows multiple clusters to coexist on the same host — often across different PostgreSQL major versions — each with its own port, config, and service unit.
+Example of two clusters coexisting:
+- `16/main` → port 5432 → `/var/lib/postgresql/16/main`
+- `15/main` → port 5433 → `/var/lib/postgresql/15/main`
+
+Relation to systemd
+Each cluster is managed by a systemd template unit: postgresql@<version>-<cluster>.service
+For example:
+- `postgresql@16-main.service`
+- `postgresql@15-main.service`
+So the status column in `pg_lsclusters` is effectively reflecting `systemctl is-active postgresql@16-main.service`.
+
+You can control a specific cluster via either tool:
+
+# systemd way
+sudo systemctl restart postgresql@16-main.service
+
+# Debian wrapper way (usually preferred)
+sudo pg_ctlcluster 16 main restart
+
+
+Common Flags
+
+`pg_lsclusters` accepts a small set of options:
+
+ Flag | Purpose |
+
+-h, --help     Show usage summary. 
+-V,--version   Print version. 
+--json         Output in JSON format (newer versions). Useful for scripting. 
+-s, --skip-systemd   (on some versions) Skip systemd-based status lookup. 
+--no-header  Suppress the header row (useful in scripts). 
+[version] Optional positional argument to filter by PostgreSQL major version, e.g., `pg_lsclusters 16`. 
+
+Examples
+pg_lsclusters # List all clusters
+pg_lsclusters 16 # Only clusters of PostgreSQL 16
+pg_lsclusters --json | jq . # JSON output for scripting
+pg_lsclusters --no-header # No header, easy parsing
+
+
+ Related Tools in the Same Family
+`pg_lsclusters` is part of a set of Debian-provided PostgreSQL cluster tools:
+| Command | Purpose |
+
+pg_createcluster <ver> <name>          Create a new cluster. 
+pg_dropcluster <ver> <name>`           Delete a cluster. 
+pg_ctlcluster <ver> <name> <action>    Start/stop/restart a cluster (`start`, `stop`, `restart`, `reload`, `status`). 
+pg_upgradecluster <oldver> <name>      Upgrade a cluster to a newer PostgreSQL version. 
+pg_conftool <ver> <name> <action>      Edit cluster config parameters from the CLI. 
+pg_lsclusters List clusters and their status. 
+
+
+
+If you're managing PostgreSQL on Debian/Ubuntu, this is usually the **first command** you run when troubleshooting — it tells you instantly which version(s) are installed, what ports they use, and whether they're running.
