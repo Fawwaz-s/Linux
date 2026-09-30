@@ -313,6 +313,7 @@ journalctl -p err               # Error level only
 journalctl -n 50                # Last 50 lines
 journalctl --disk-usage         # Check size
 journalctl --vacuum-size=100M   # Clean up
+journalctl -u order-api.service -g "error" --since "24 hours ago" #combines different flags
 
 Best Practices
 
