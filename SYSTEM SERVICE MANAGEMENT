@@ -1,3 +1,4 @@
+Systemd - running in the background (as PID 1 on modern Linux systems) and bootstraps the system and manages processes.
 A service (a daemon) is a program that runs in the background without direct user interaction.
 
 Service       	Purpose
@@ -8,14 +9,25 @@ cups	    Handles printing
 NetworkManager	Manages network connections
 cron	     Runs scheduled tasks
 
-System service management is the process of starting, stopping, monitoring, configuring, and automatically running background
 programs (services) that the operating system or applications depend on.
 - On most modern Linux distributions, this is handled by systemd, using the systemctl command.
 - service - Legacy command that works with both SysV init and systemd (acts as a wrapper)
 - Both systemctl and service are used to manage system services in Linux, but they operate at different levels.
 
-SYSTEMCTL
+SYSTEMCTL is the primary command for controlling the systemd init system and service manager, checking its status, and configure its behavior
 Syntax: systemctl [OPTIONS] COMMAND [UNIT_NAME]
+Systemd doesn't just manage "services"; it manages units. A unit is a standardized configuration file (usually ending in .service, .socket, etc.) that describes a resource.
+Here are the most relevant unit types:
+.service: A daemon or application (e.g., sshd.service). This is the most common type.
+.socket: Encapsulates inter-process communication or network sockets. Useful for on-demand activation.
+.target: Used to group units and provide synchronization points (similar to old runlevels). For example, multi-user.target represents a standard multi-user system state.
+.timer: Triggers other units based on time, serving as a modern replacement for cron.
+.device: Exposes kernel devices.
+.mount / .automount: Manages filesystem mount points.
+.swap: Encapsulates swap partitions or files.
+.path: Activates services when specific files or directories change.
+.slice / .scope: Used for grouping and managing system processes and resource control.
+
 Core Commands for Service Management
 --start & stop #different from enable, starts/stops now ONLY
  sudo systemctl start nginx #Start a Service immediately, will be unavailable after reboot # Use sudo for system services
@@ -126,7 +138,8 @@ systemctl list-timers                        # Scheduled timers
 systemctl list-dependencies nginx            # Show dependencies
 systemctl list-dependencies --reverse nginx  # Show what depends on it
 --Show Detailed Info
-systemctl show nginx                         # All properties
+systemctl status nginx # Human-readable
+systemctl show nginx                         # All properties #Machine readble
 systemctl show nginx -p LoadState  
 
 
