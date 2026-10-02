@@ -44,7 +44,7 @@ Flag      Meaning                                  Example
 -v       verbose, show full connection details   curl -v google.com
 -I       fetch headers only                       curl -I google.com
 -L        follow redirects                        curl -L google.com #usually used when url has been changed and redirects, instead of break, it goes. 
--o      save output to file                       curl -o page.html google.com
+-o      save output to file                       curl -o page.html google.com, -o /dev/null #means disregard the message, not interested.
 -O      save with original filename               curl -O example.com/file.zip
 -u      username:password auth                    curl -u user:pass example.com
 -X      specify HTTP method                       curl -X POST example.com
@@ -52,6 +52,8 @@ Flag      Meaning                                  Example
 -H      add custom header                         curl -H "Authorization: Bearer token"
 -k      ignore SSL certificate errors             curl -k https://example.com
 -s      silent mode, no progress bar              curl -s example.com
+
+
 ---------------
 curl example.com # Simple fetch a webpage
 curl -O https://example.com/file.zip #Download a file
@@ -59,6 +61,9 @@ curl -I https://google.com #See server headers only
 curl -X POST -d "username=admin&password=1234" http://example.com/login #Send a POST request with data
 curl -Lv https://google.com #Follow redirects verbosely
 curl -u admin:password123 http://example.com/api #Pass authentication
+curl -s -o /dev/null -w "HTTP %{http_code}\n" "$API_URL/health"
+-w "HTTP %{http_code}\n" - Write-out — after the request finishes, prints a custom format string. %{http_code} is a curl variable that gets replaced with the HTTP status code (e.g., 200, 404, 500). 
+# The URL to request — $API_URL is a shell variable, and /health is a common health-check endpoint
 
 ###nc (Netcat) — Netcat creates raw TCP/UDP connections
 basic context: nc [flags] [host] [port]
