@@ -176,7 +176,7 @@ The Action Executor: -exec cmd {} \;
    How -exec works:
     -exec : Tells find to run a command on each matched file.
     {} : Placeholder — replaced by the full path of each found file.
-    cp : Copy command.
+    cp : Copy command..
    /backup/images/ : Destination directory (must exist beforehand).
    \; : Ends the -exec command (required syntax).
   * find . -type d -exec chmod 755 {} \;  # change permission of every directory
