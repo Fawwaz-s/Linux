@@ -34,6 +34,7 @@ Flag     	Long form    	Meaning
 -X  	--no-psqlrc	    Ignore ~/.psqlrc
 -e	 --echo-queries	  Echo commands sent to the server
 
+
 --Common "instances" you'll actually see
 sudo -u postgres psql	 #Switch to the postgres OS user and open psql
 psql -U postgres  #Open psql connecting as the postgres DB user
