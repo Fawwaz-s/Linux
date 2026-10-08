@@ -1,0 +1,283 @@
+sudo apt install git #No need to download the app Git, it can be installed to terminal.
+git is a distributed version control system. git is almost always used as : git <subcommand> [flags] [arguments]
+ #git — the binary #<subcommand> — what you want to do (commit, push, log, …) #[options] — flags that modify the subcommand (-m, --amend, -v, …)
+ #[arguments] — targets (filename, branch, remote, …)
+For more info: * git help <subcommand>  # full man page * git <subcommand> -h   # quick usage summary * git --help   # list common subcommands
+ 
+Global flags (work with any subcommand). These go before the subcommand:
+Flag	                Meaning
+-C <path>     	    Run as if git was started in <path> (no cd needed)     *git -C ~/projects/app status  # run status in another dir
+-c <key>=<value>	  Set a config value for this command only   *git -c user.name="Alice" commit -m "x"  # override config for one commit
+--git-dir=<path>	  Point at a specific .git directory
+--work-tree=<path>	Point at a specific working tree
+--no-pager	        Don't pipe output through a pager  *git --no-pager log --oneline   # dump log without pager
+-p / --paginate	    Force pager even for commands that don't page
+--version	          Print git version
+--help	            Print help
+-v / --verbose	    More output
+
+Subcommands grouped by purpose
+A) Setup & configuration
+Command	               What it does
+git init	        Create a new repository (.git/ directory) *git init -b main 
+git clone <url>  	Copy a remote repo locally
+git config	      Read/write config (user, remotes, aliases, …)
+
+Key flags with examples:
+git init --bare                 # server-style repo with no working tree
+git init -b main                # use "main" as the default branch name
+git clone --depth 1 <url>       # shallow clone (only latest commit)
+git clone --branch v1.2 <url>   # clone a specific branch/tag
+git clone --recurse-submodules <url>
+git config --global user.name "Alice"
+git config --global user.email "alice@example.com"
+git config --list               # show all config
+git config --global alias.st status   # create alias: git st
+--global = your user config, --system = machine-wide, --local (default) = current repo.
+
+B) Inspecting state (read-only, safe)
+Command         	  What it does
+git status  	    Show working tree / staged changes
+git log       	  Show commit history
+git diff	        Show changes
+git show	        Show a specific object (usually a commit)
+git blame <file>  Show who last changed each line
+git reflog	      Show where HEAD has been (lifeline for "I lost my commit") #commit is a saved instance of your work, a snapshot 
+
+Key flags with examples:
+git status -s                   # short format
+git status -sb                  # short + branch info
+git log --oneline               # one line per commit
+git log --oneline --graph --all --decorate   # fancy ASCII tree
+git log -n 5                    # last 5 commits
+git log --author="Alice"
+git log --since="2 weeks ago"
+git log -p                      # show patches (diffs)
+git log --stat                  # show file change stats
+git diff                        # unstaged changes
+git diff --staged               # staged changes (a.k.a. --cached)
+git diff HEAD~1 HEAD            # diff between two commits
+git diff main..feature          # diff between branches
+git blame -L 10,20 file.txt     # blame only lines 10–20
+
+Staging & committing
+Command	          What it does
+git add     	Stage changes for the next commit
+git commit  	Record staged changes as a commit
+git rm	      Remove files (and stage the removal)
+git mv	      Rename/move files (and stage it)
+git restore 	Discard changes in working tree or unstage
+git reset	    Move HEAD / unstage (see below)
+
+Key flags and examples:
+git add file.txt                # stage one file
+git add .                       # stage everything under cwd
+git add -A                      # stage all changes (adds + deletes)
+git add -p                      # interactively stage hunks (great tool)
+git add -u                      # update tracked files only
+git commit -m "message"         # commit with inline message
+git commit                      # open editor for message
+git commit -am "message"        # add tracked files + commit (skips `git add`)
+git commit --amend              # rewrite the last commit
+git commit --amend --no-edit    # amend without changing message
+git commit -S                   # GPG-sign the commit
+git commit --allow-empty -m "ci"  # commit with no changes (useful for triggers)
+git rm file.txt                 # delete file + stage deletion
+git rm --cached file.txt        # stop tracking, keep file on disk
+git restore file.txt            # discard working-tree changes
+git restore --staged file.txt   # unstage (keep changes in working tree)
+Mental model: working tree → (add) → staging area (index) → (commit) → repository.
+
+D) Branching & merging
+Command	               What it does
+git branch	     List/create/delete branches
+git switch	     Change branches (modern)
+git checkout	   Change branches or restore files (older, overloaded)
+git merge	       Combine branches
+git rebase	     Replay commits on top of another base
+git cherry-pick	 Copy a specific commit onto current branch
+
+Key flags and examples:
+git branch                      # list local branches
+git branch -a                   # include remotes
+git branch -vv                  # verbose (upstream + last commit)
+git branch new-feature          # create branch
+git branch -d old-branch        # delete (safe)
+git branch -D old-branch        # delete (force)
+git branch -m new-name          # rename current branch
+git switch main                 # change branch
+git switch -c feature           # create + switch
+git switch -                    # go back to previous branch
+git checkout main               # old syntax for switch
+git merge feature               # merge feature into current
+git merge --no-ff feature       # always create a merge commit
+git merge --squash feature      # squash into a single staged change
+git merge --abort               # bail out of a conflicted merge
+git rebase main                 # replay current branch on top of main
+git rebase -i HEAD~3            # interactive rebase (edit/squash/reorder)
+git rebase --continue           # after resolving conflicts
+git rebase --abort              # cancel
+git cherry-pick abc1234         # apply one commit
+git cherry-pick abc1234..def5678  # apply a range
+
+E) Remotes & syncing
+Command         	What it does
+git remote   	Manage remotes
+git fetch   	Download objects/refs (does NOT touch working tree)
+git pull	    fetch + merge (or rebase)
+git push	    Upload local commits to a remote
+
+Key flags and examples:
+git remote -v                   # list remotes with URLs
+git remote add origin <url>
+git remote remove origin
+git fetch                       # fetch from default remote
+git fetch --all --prune         # fetch all + clean deleted remote branches
+git pull                        # fetch + merge
+git pull --rebase               # fetch + rebase instead of merge
+git push                        # push current branch to its upstream
+git push -u origin main         # push + set upstream (first time)
+git push origin feature         # push specific branch
+git push --force-with-lease     # SAFE force push (recommended)
+git push --force                # DANGEROUS: overwrite remote
+git push origin --delete branch # delete remote branch
+git push --tags                 # push all tags
+Rule of thumb: prefer --force-with-lease over --force. It refuses to overwrite if someone else pushed since your last fetch.
+
+F) Undoing things (the "oh no" toolkit)
+Command	           What it does
+git restore	   Discard working-tree or staged changes
+git reset	     Move HEAD; optionally reset index/working tree
+git revert	   Create a new commit that undoes an old one (safe for shared history)
+git clean	     Remove untracked files
+
+Key flags and examples:
+git reset --soft HEAD~1     # undo last commit, keep changes staged
+git reset --mixed HEAD~1    # undo last commit, unstage but keep changes (default)
+git reset --hard HEAD~1     # undo last commit AND discard changes (dangerous)
+git reset file.txt          # unstage a file (mixed)
+git revert abc1234          # new commit undoing abc1234
+git revert HEAD             # undo the last commit
+git clean -n                # dry run: what would be removed?
+git clean -f                # remove untracked files
+git clean -fd               # also remove untracked directories
+git clean -fdx              # also remove ignored files (be careful!)
+Golden rule: revert is public-safe (adds a commit). reset/rebase rewrite history — only do them on commits you haven't pushed, or use force-with-lease.
+
+G) Stashing (temporary saves)
+git stash                       # save working changes and revert to HEAD
+git stash push -m "wip: auth"   # named stash
+git stash -u                    # include untracked files
+git stash list                  # see all stashes
+git stash show -p stash@{1}     # diff of a stash
+git stash pop                   # apply + drop top stash
+git stash apply stash@{2}       # apply without dropping
+git stash drop stash@{1}        # delete a stash
+git stash clear                 # delete all stashes
+
+H) Tags (releases)
+git tag                         # list tags
+git tag v1.0.0                  # lightweight tag
+git tag -a v1.0.0 -m "Release"  # annotated tag (recommended)
+git tag -d v1.0.0               # delete local tag
+git push origin v1.0.0          # push a single tag
+git push --tags                 # push all tags
+
+I) Advanced / power-user
+git bisect start                # binary search for the commit that broke things
+git bisect bad                  # mark current as bad
+git bisect good v1.0            # mark a known-good commit
+git bisect run ./test.sh        # automate the search
+git worktree add ../hotfix main # check out another branch in a new dir
+git submodule update --init --recursive
+git gc --aggressive             # garbage collect
+git fsck                        # check repo integrity
+git archive --format=zip HEAD > src.zip
+
+4. The .gitignore and config files (worth knowing)
+.gitignore — patterns for files git should ignore (node_modules/, *.log, .env)
+.git/config — repo-local config
+~/.gitconfig — global config
+.git/HEAD — points to current branch
+
+5. Common "instances" (real-world one-liners)
+# First-time setup
+git config --global user.name "Alice"
+git config --global user.email "alice@example.com"
+git config --global init.defaultBranch main
+
+# Start a project
+git init -b main
+git add .
+git commit -m "Initial commit"
+git remote add origin git@github.com:alice/app.git
+git push -u origin main
+
+# Typical daily flow
+git switch -c feature/login
+git add -p
+git commit -m "Add login form"
+git push -u origin feature/login
+# …open PR…
+
+# Sync with main
+git switch main
+git pull --rebase
+git switch feature/login
+git rebase main
+
+# Fix the last commit
+git add forgotten.txt
+git commit --amend --no-edit
+
+# Recover after a bad reset
+git reflog                      # find the lost commit hash
+git reset --hard abc1234        # go back to it. 
+
+TL;DR cheat sheet
+Task                    	Command
+New repo	              git init
+Clone	git               clone <url>
+Status	                git status -sb
+Stage all         	    git add -A
+Stage interactively	    git add -p
+Commit	                git commit -m "msg"
+Amend last commit	      git commit --amend
+History	                git log --oneline --graph --all
+Diff	                  git diff / git diff --staged
+New branch	            git switch -c name
+Switch branch         	git switch name
+Merge                 	git merge branch
+Rebase	                git rebase main
+Fetch	                  git fetch --all --prune
+Pull	                  git pull --rebase
+Push	                  git push -u origin branch
+Safe force push	        git push --force-with-lease
+Undo commit (public)	  git revert HEAD
+Undo commit (local)   	git reset --soft HEAD~1
+Discard file changes	  git restore file
+Unstage	                git restore --staged file
+Stash	                  git stash / git stash pop
+Save my life	          git reflog
+
+
+Key mental model
+Git has three areas:
+
+text
+working tree   →   staging area (index)   →   repository (.git)
+        git add                    git commit
+
+
+And four kinds of "undo" you must not confuse:
+restore — discard changes
+reset — move HEAD / unstage
+revert — make an inverse commit
+reflog — the time machine when all else fails
+Memorize git status, git log --oneline, git add -p, git commit --amend, git reflog and you'll be dangerous in a good way.
+
+
+
+
+
+
