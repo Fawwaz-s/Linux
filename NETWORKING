@@ -1,11 +1,11 @@
 Tool                     Purpose
-gitc lone           Copy an entire Git repository from a remote location (GitHub, GitLab, Bitbucket, etc.) to your local machine.
-curl                Transfer data to/from servers
-nc (netcat)         Raw TCP/UDP connections
-openssl s_client    Test SSL/TLS encrypted connections
-nmap                Scan networks and ports
-telnet              Connect to remote hosts (unencrypted)
-ports               Doors that services listen on 
+ss (socket statistics) used to inspect network connections and sockets.
+curl                   Transfer data to/from servers
+nc (netcat)            Raw TCP/UDP connections
+openssl s_client       Test SSL/TLS encrypted connections
+nmap                   Scan networks and ports
+telnet                 Connect to remote hosts (unencrypted)
+ports                  Doors that services listen on 
 
 ###PORTS
 Well Known Ports:
@@ -35,6 +35,60 @@ Useful options:
 -6 forces IPv6.
 You stop an infinite ping with Ctrl+C, and the summary shows packet loss and round-trip times.
 
+####Ss
+a socket is an endpoint that allows two programs to communicate with each other, either on the same computer or across a network.
+ss is  a powerful diagnostic tool for understanding network activity on a Linux system. Its speed and detailed output make it essential for troubleshooting and security auditing.
+Syntax: ss [OPTIONS] [FILTER]
+# When you run ss with no options, it displays a list of open, non-listening sockets that have established a connection (e.g., TCP, UDP, UNIX)
+
+Key Flags and Options categorized by their function.
+Socket Type and State
+-t / --tcp: Display only TCP sockets.
+-u / --udp: Display only UDP sockets.
+-x / --unix: Display Unix domain sockets.
+-l / --listening: Show only listening sockets. By default, these are omitted.
+-a / --all: Display both listening and non-listening (established) sockets.
+-4 / --ipv4: Show only IPv4 sockets.
+-6 / --ipv6: Show only IPv6 sockets.
+
+Output Formatting and Resolution
+-n / --numeric: Do not resolve service names (e.g., show port 22 instead of "ssh"). This makes the command much faster, especially if DNS is slow or failing.
+-r / --resolve: Try to resolve numeric addresses and ports into names.
+-H / --no-header: Suppress the header line, useful for scripting.
+-O / --oneline: Print each socket's data on a single line.
+
+Detailed Information
+-p / --processes: Show the process (PID and program name) using the socket. Note: You typically need sudo or root privileges to see processes owned by other users.
+-i / --info: Show internal TCP information, including rtt (round-trip time), cwnd (congestion window), retrans (retransmissions), and more. This is invaluable for TCP performance debugging.
+-s / --summary: Print summary statistics of the socket usage (total sockets, TCP states, etc.).
+-m / --memory: Show socket memory usage.
+-e / --extended: Show detailed socket information including the UID, inode, and socket cookie.
+-o / --options: Show timer information for TCP sockets.
+
+Advanced and Administrative
+-K / --kill: Attempt to forcibly close sockets. This is a powerful administrative command that requires privileges.
+-Z / --context: Show the SELinux security context of the process. Requires privileges.
+-N / --net: Switch to a specified network namespace.
+
+Common Usage Examples
+- Find what is listening on TCP/UDP ports with process info (requires sudo):
+* sudo ss -ltunp
+# This is often considered the single most useful command for auditing a server's exposed surface. It shows listening (-l) TCP (-t) and UDP (-u) sockets in numeric (-n) format with the process (-p) details.
+- View all active TCP connections with process information:
+* sudo ss -tanp
+# This shows all (-a) TCP (-t) sockets, both listening and established, in numeric (-n) format with process (-p) information.
+- Debug TCP performance (e.g., checking RTT and congestion window):
+* sudo ss -tni
+# Use this on established connections to see TCP internals like rtt, cwnd, and retrans.
+- Show a summary of socket statistics:
+ss -s
+# This gives you a quick overview of the number of sockets in various states, which is useful for spotting issues like a large number of TIME-WAIT or SYN-RECV sockets.
+
+Filtering Connections
+You can filter the output of ss using a powerful expression syntax. Some common filters include:
+By Port: * ss -tn sport = :22 (source port 22) or * ss -tn dport = :443 (destination port 443).
+By State: ss -tan state established or ss -tan state time-wait.
+By Destination: ss -tn dst 192.168.1.1.
 
 ###Curl 
 Transfer Data From Servers -it fetches web content from the terminal.
@@ -52,8 +106,6 @@ Flag      Meaning                                  Example
 -H      add custom header                         curl -H "Authorization: Bearer token"
 -k      ignore SSL certificate errors             curl -k https://example.com
 -s      silent mode, no progress bar              curl -s example.com
-
-
 ---------------
 curl example.com # Simple fetch a webpage
 curl -O https://example.com/file.zip #Download a file
