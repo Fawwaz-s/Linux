@@ -1,3 +1,14 @@
+-STRINGS: scans a file (typically a non-text/binary file) and prints sequences of printable characters that are at least 4 characters long by default.
+Its primary use is inspecting binary files—like compiled executables, object files, or memory dumps—to extract readable text such as error messages, file paths, or hardcoded strings.
+FLags
+-a / --all: Scan the entire file, not just specific sections.
+-n <length>: Set the minimum string length (default is 4).
+-f: Print the filename before each string (useful when scanning multiple files).
+-t <radix>: Print the byte offset of each string (radix o=octal, x=hex, d=decimal).
+Real-world examples
+strings /bin/ls | grep -i "usage"
+This would extract readable strings from the ls binary and filter for anything containing "usage," often revealing help text or error messages embedded in the program.
+-----
 -SED is a commands for editing, transforming, filtering, and extracting text, especially when working with files, logs, configuration files, and command output.
  Stream editor (SED) Unlike a normal text editor such as nano or vim, sed usually processes text line by line without opening an interactive editor.
 Syntax: sed [OPTIONS] 'COMMAND' [FILE]
