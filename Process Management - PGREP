@@ -1,0 +1,63 @@
+pgrep searches the currently running process table and prints the PIDs of processes matching your criteria. 
+It is essentially a cleaner, purpose-built alternative to piping ps into grep, because it matches against the process name (or full command line with -f) rather than the formatted output line.
+
+Syntax: pgrep [options] pattern
+The pattern is an Extended Regular Expression (ERE) matched against the process name by default.
+ 
+Key Options Breakdown
+Matching Control
+-f, --full: Matches the pattern against the full command line instead of just the process name.
+    Essential for scripts like python app.py where the process name is just python3.
+-x, --exact: Requires an exact match of the name (or command line with -f). Prevents pgrep ssh from matching sshd.
+-i, --ignore-case: Case-insensitive matching.
+
+Filtering
+-u, --euid: Match by effective user ID (e.g., -u root). Multiple users are OR'd: -u root,daemon.
+-P, --parent: Match by parent PID (useful for finding child processes).
+-t, --terminal: Match by controlling terminal (e.g., -t pts/0).
+
+Output Control
+-l, --list-name: Prints the PID and process name.
+-a, --list-full: Prints the PID and full command line.
+-c, --count: Prints only the count of matching processes.
+-d, --delimiter: Sets the output delimiter (default newline). Useful for pgrep -d, to feed comma-separated PIDs into other commands.
+
+Selection
+-n, --newest: Selects only the most recently started matching process.
+-o, --oldest: Selects only the oldest matching process.
+
+Practical Examples
+1. Find a daemon's PID (owned by root)
+pgrep -u root named # Lists the PID(s) of named processes owned by root.
+
+2. Exact match to avoid ambiguity
+pgrep -x sshd #Matches a process named exactly sshd. Without -x, pgrep ssh could also match ssh-agent or sshd.
+
+3. Match a script by its full command line
+pgrep -f "python app.py" #The process name is just python3; -f lets you search the arguments to find your specific script.
+
+4. List PID and name together
+pgrep -l chrome #Output looks like 1234 chrome.
+
+5. Feed PIDs into another command
+ps -fp $(pgrep -d, -x bash) #-d, outputs PIDs comma-separated, which ps -fp accepts to show detailed information for all bash processes.
+
+Relevant Files & Underlying Mechanics
+/proc (procfs): pgrep reads the process table from this virtual filesystem. Each PID has a directory like /proc/1234/.
+/proc/<pid>/stat: Contains the process name (comm), limited to 15 characters on Linux. This is why very long process names require -f to match fully.
+/proc/<pid>/cmdline: Contains the full command line, used when you pass -f.
+
+e.g: This is a two-step technique to pull a running process’s secrets straight out of memory, bypassing config files or logs.
+Step 1: pgrep -f "python3 /opt/app/main.py"      #Find the Process ID (PID) of the main.py application
+Step 2: strings /proc/<PID>/environ | grep OAUTH  #Print the active environment variables directly from kernel memory
+                                                        # Replace <PID> with the actual number from Step 1
+#On Linux, every running process has a virtual file at /proc/<PID>/environ containing all the environment variables it was launched with, 
+concatenated together and separated by null bytes (\0) instead of newlines. 
+Because of those null bytes, cat can render it illegibly in a terminal — strings extracts the printable text chunks (each variable) so they’re readable, one per line.
+grep OAUTH then filters that down to just the lines containing “OAUTH” — typically something like OAUTH_CLIENT_SECRET=... or OAUTH_TOKEN=
+
+Related: pkill & pidwait
+pgrep shares its matching engine with:
+pkill: Instead of printing PIDs, sends a signal (default SIGTERM) to matching processes.
+pidwait: Waits for matching processes to exit.
+Because they share options, everything you learn about pgrep matching applies directly to pkill (e.g., pkill -f "python app.py").
