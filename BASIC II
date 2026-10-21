@@ -6,11 +6,7 @@ Lightweight but limited to simple single-char delimiters.
 -AWK - it's not just a filter, it's a full text-processing language with variables, arrays, arithmetic, functions,
 and control flow (if, for, while). It replaces several tools at once. 
 A single awk one-liner can do what would otherwise take grep | cut | sort | uniq chained together
-- SORT is your ordering engine — lexicographic by default, 
-but -n, -h, -V, and -k adapt it to numbers, sizes, versions, and specific fields.
-- UNIQ is your duplicate handler — but it only works on adjacent lines, 
-so it almost always needs a sort in front of it.
-The trio sort | uniq -c | sort -rn is one of the most useful patterns in all of shell scripting.
+
 ------------------------------------------
 read command in Linux is a shell built-in that takes input and stores it in variables
 Syntax : read -p "Prompt message: " variable_name #like the input function in python
