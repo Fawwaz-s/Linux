@@ -11,7 +11,7 @@ Flag	             Description
 -l	         Long format
 -u [user] 	Show processes for specific user #ps -u john -o pid,ppid,cmd,time
 -p [PID]	  Show specific process by PID
--o	        Custom output format # -o in ps means format output: it lets you choose exactly which columns to display instead of using the default process listing
+-o	        Custom output format # -o in ps means format output
 --sort	    Sort by specific column
 -C [cmd]	  Select by command name
 aux	       BSD-style: all processes, all users, with extra info
