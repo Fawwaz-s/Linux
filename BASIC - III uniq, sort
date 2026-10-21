@@ -1,0 +1,54 @@
+SORT writes a sorted concatenation of all input files to standard output. It is a versatile tool for ordering lines of text based on various criteria .
+Key Ordering Options
+These flags change the rules used to compare lines.
+-n, --numeric-sort: Compares according to string numerical value. Essential for sorting numbers like 2 and 10 correctly (otherwise 10 comes before 2 in a dictionary sort) .
+-h, --human-numeric-sort: Compares human-readable numbers (e.g., 2K, 1G). Useful for sorting file sizes .
+-g, --general-numeric-sort: Compares according to general numerical value, supporting scientific notation (e.g., 1.0e-34) .
+-M, --month-sort: Compares month names (e.g., JAN < FEB < ... < DEC) .
+-V, --version-sort: Natural sort of version numbers within text (e.g., 1.10 comes after 1.9) .
+-r, --reverse: Reverses the result of comparisons, sorting in descending order .
+-f, --ignore-case: Folds lowercase to uppercase for comparison, making the sort case-insensitive .
+-b, --ignore-leading-blanks: Ignores leading whitespace when determining sort keys .
+
+Key Field & Output Options
+These flags control what part of the line is sorted and how the output is formatted.
+-k, --key=KEYDEF: Sorts via a specific key (field). For example, -k 2 sorts by the second whitespace-separated field. You can specify character positions too, like -k 2.3,2.5 .
+-t, --field-separator=SEP: Uses SEP as the field separator instead of the default transition from non-blank to blank .
+-u, --unique: Outputs only the first of an equal run of lines. This is the most efficient way to deduplicate unsorted input .
+-o, --output=FILE: Writes the result to FILE instead of standard output. This is safer for in-place sorting (sort -o file file) .
+-c, --check: Checks whether the input is already sorted and reports the first unsorted line. It produces no sorted output .
+-s, --stable: Disables the last-resort comparison, ensuring lines that compare equal retain their original relative order .
+
+UNIQ filters adjacent matching lines from its input. A critical caveat is that it only detects duplicates if they are next to each other, which is why it is almost always used after sort .
+
+Key Selection Options
+These control which lines are printed.
+-c, --count: Prefixes each output line with the number of times it occurred in the input .
+-d, --repeated: Prints only lines that are repeated (duplicates), showing one line per group .
+-u, --unique: Prints only lines that are not repeated (appear exactly once) .
+-D, --all-repeated: Prints all duplicate lines, not just one per group. This is a GNU extension .
+
+Key Comparison Options
+These flags modify how uniq decides if two lines are identical.
+-i, --ignore-case: Ignores case differences when comparing lines .
+-f N, --skip-fields=N: Skips the first N fields (a blank-separated sequence) before checking for uniqueness .
+-s N, --skip-chars=N: Skips the first N characters before checking for uniqueness. If used with -f, fields are skipped first .
+-w N, --check-chars=N: Compares no more than N characters on each line (after any specified skipping) .
+
+Output Formatting (GNU Extensions)
+--group[=METHOD]: Shows all items but separates unique groups with an empty line. METHOD can be separate, prepend, append, or both .
+-z, --zero-terminated: Uses a NUL byte instead of a newline as the line delimiter, useful for processing filenames .
+
+The Classic Combination
+Because uniq requires adjacent duplicates, the standard idiom is to pipe them together:
+sort file.txt | uniq -c
+This sorts the file, then counts occurrences of each unique line. If you just need unique lines without counts, sort -u is simpler and faster than sort | uniq .
+
+To go even further:
+cut -d " " -f 1 /home/admin/access.log | sort | uniq -c | sort -nr | head -n 1 | awk '{print $2}' #takes a complicatedly long file on website. cut just the ip,sort, count & take just the IP
+# sort -nr # sorts numerically (-n), descending (-r) Keeping the line highest number at the top
+head -n 1 # takes just that first line - 234 123.234.9883
+awk '{print $2}' # returns just 123.234.9883
+
+
+
