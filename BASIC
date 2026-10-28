@@ -196,6 +196,7 @@ Flag	            Description                                                    
 -q	           Quiet mode. When viewing multiple files, suppress the filename headers.       	head -q file1.txt file2.txt
 -v           	Always show the filename header (useful when viewing multiple files).         	head -v *.txt
 head -n 20 ./* to go through all the files in the directory
+head -n 30 fu* #to go through files that start with fu
 
 syntax: tail [options] filename
 Flag	                Description                                                                                                   	Example
