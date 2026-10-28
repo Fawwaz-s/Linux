@@ -195,6 +195,7 @@ Flag	            Description                                                    
 -c N	         Print the first N bytes (characters) of the file.	                             head -c 100 file.txt (shows first 100 characters)
 -q	           Quiet mode. When viewing multiple files, suppress the filename headers.       	head -q file1.txt file2.txt
 -v           	Always show the filename header (useful when viewing multiple files).         	head -v *.txt
+head -n 20 ./* to go through all the files in the directory
 
 syntax: tail [options] filename
 Flag	                Description                                                                                                   	Example
