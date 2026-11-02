@@ -25,7 +25,12 @@ ssh-add ~/.ssh/id_ed25519_github  #this adds the ssh key to the key agent, witho
 -p 443	Port — GitHub also listens on 443; useful when port 22 is blocked by a firewall: ssh -T -p 443 git@ssh.github.com.
 -o IdentitiesOnly=yes	Option — tell SSH to use only the -i key, not try every key in the agent. Avoids "too many authentication failures".
 git@github.com	User@host. git is GitHub's fixed SSH username (not your GitHub handle — always literally git).
-Expected success output:
+
+SSH DOES WORK WITH WEAK PERMISSION
+chmod 700 ~/.ssh  #7 = owner read+write+execute, 0 = group none, 0 = others none. Only you can enter the .ssh directory.
+chmod 600 ~/.ssh/id_ed25519_github #Owner read+write only. Nobody else can read the private key. SSH will error if this is looser.
+chmod 644 ~/.ssh/id_ed25519_github.pub #Owner read+write, others read. Public key is safe to be readable.
+Permission digit meaning: r=4, w=2, x=1, summed per group (owner/group/others).
 
 ##The config file (permanent alternative to ssh-add) 
 CREATE => ~/.ssh/config and nano:
