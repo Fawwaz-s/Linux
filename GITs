@@ -122,7 +122,7 @@ git cherry-pick abc1234..def5678  # apply a range
 
 E) Remotes & syncing
 Command         	What it does
-git remote   	Manage remotes
+git remote   	Manage remotes *git remote set-url origin git@github.com:Fawwaz-s/exercises-docker-basics.git
 git fetch   	Download objects/refs (does NOT touch working tree)
 git pull	    fetch + merge (or rebase)
 git push	    Upload local commits to a remote
