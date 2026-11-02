@@ -1,0 +1,88 @@
+TO CREATE MY SSH-KEY
+*ssh-keygen -t ed25519 -C "your_email@example.com" -f ~/.ssh/id_ed25519_github 
+# -t ed25519    -- Sets the key type/algorithm to Ed25519—a modern, fast, secure algorithm recommended for new keys. docs.github 
+# -C "your_email@example.com"  --Adds a comment to the public key, usually your email. It is only a human-readable label; it does not affect security or authentication. docs.github 
+#  -f ~/.ssh/id_ed25519_github --Sets the output file path/name for the private key. ~/.ssh stores all ssh keys and this particular one is under id_ed25519_github 
+#  ~/.ssh/id_ed25519_github.pub --is automatically created alongside it; this is the public key you add to be added to the public. 
+   # cat ~/.ssh/id_ed25519_github.pub to access it, usually a one lined code
+# (optional) -N ""	New passphrase, empty = no passphrase. Use only for scripts/CI where no prompt is possible. On a personal laptop, omit it and type a real passphrase at the prompt.
+NOTE: This process will ask for a passphrase i.e a password, its always a good idea to put one
+
+*eval "$(ssh-agent -s)"   
+ssh-add ~/.ssh/id_ed25519_github  #this adds the ssh key to the key agent, without it, it sits in ~/.ssh, but your computer doesn't automatically know to use it for your destination.        
+# eval "$(ssh-agent -s)"	ssh-agent -s prints shell commands that start the agent and export SSH_AUTH_SOCK / SSH_AGENT_PID. 
+  eval runs those exports in your current shell, so the agent is visible to later commands. Without eval, the agent starts but your shell can't find it.
+# ssh-add ~/.ssh/id_ed25519_github	Loads the private key into the agent (asks for the passphrase once). The agent then signs for you until the session ends.
+(optional) ssh-add -l	List keys currently loaded in the agent.
+(optional) ssh-add -D	Delete all keys from the agent.
+
+*ssh -T git@github.com # Testing the connection
+# ssh	The SSH client.
+-T	Disable pseudo-terminal allocation. GitHub doesn't offer shell access, so asking for a TTY produces a warning; -T suppresses it.
+-v	Verbose — prints each step (which keys are offered, which are accepted). The most useful debugging flag.
+-vv / -vvv	Even more verbose (very noisy; -v is usually enough).
+-i ~/.ssh/id_ed25519_github	Identity file — explicitly tell SSH which private key to use. Essential when your key has a non-default name.
+-p 443	Port — GitHub also listens on 443; useful when port 22 is blocked by a firewall: ssh -T -p 443 git@ssh.github.com.
+-o IdentitiesOnly=yes	Option — tell SSH to use only the -i key, not try every key in the agent. Avoids "too many authentication failures".
+git@github.com	User@host. git is GitHub's fixed SSH username (not your GitHub handle — always literally git).
+Expected success output:
+
+##The config file (permanent alternative to ssh-add) 
+CREATE => ~/.ssh/config and nano:
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
+    IdentitiesOnly yes
+Line	What it does
+Host github.com	The alias you type on the command line (ssh github.com). Can be any label.
+HostName github.com	The real hostname SSH connects to.
+User git	GitHub's fixed SSH user.
+IdentityFile ~/.ssh/id_ed25519_github	Which private key to use for this host.
+IdentitiesOnly yes	Use only that key — don't spray all agent keys at the server.
+
+With this file in place, git clone git@github.com:flavio/repo.git automatically picks the right key; no ssh-add needed per session
+(though the agent still asks for the passphrase once per session unless you use a keychain).
+
+FOR MULTIPLE CONFIG :
+Use the Include directive in ~/.ssh/config to load multiple SSH config files. 
+OpenSSH supports glob patterns, so you can automatically include every file in a folder such as ~/.ssh/config.d/.
+
+Create a folder for split configs:
+*mkdir -p ~/.ssh/config.d
+Make your main config include them:
+*nano ~/.ssh/config
+Add:
+Include ~/.ssh/config.d/*
+Now every matching file in ~/.ssh/config.d/ is loaded as part of your SSH configuration. The * wildcard matches files in lexical (alphabetical) order.
+~/.ssh/
+├── config
+├── config.d/
+│   ├── 10-github.conf
+│   ├── 20-work.conf
+│   └── 30-servers.conf
+
+~/.ssh/config:
+Include ~/.ssh/config.d/*
+
+~/.ssh/config.d/10-github.conf:
+Host github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_github
+  IdentitiesOnly yes
+
+~/.ssh/config.d/20-work.conf:
+Host work-github
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_work
+  IdentitiesOnly yes
+
+Then you can connect with:
+ssh -T git@github.com
+ssh -T work-github
+
+
+
+
+                                                                     |
