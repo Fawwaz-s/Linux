@@ -1,3 +1,14 @@
+TO CONNECT WITH MY EC2
+*cp /mnt/c/Users/$USER/Downloads/my-key.pem ~/ #my-key.pem is ssh private key 
+
+TO ENABLE SSH-SERVICE IN TERMINAL
+*sudo systemctl status ssh #to check the status of my ssh
+*sudo apt-get update && sudo apt-get install -y openssh-server 
+*sudo systemctl enable --now ssh #to enable the service because the system downloads the file but doesn't enable it
+
+  
+
+
 TO CREATE MY SSH-KEY
 *ssh-keygen -t ed25519 -C "your_email@example.com" -f ~/.ssh/id_ed25519_github 
 # -t ed25519    -- Sets the key type/algorithm to Ed25519—a modern, fast, secure algorithm recommended for new keys. docs.github 
